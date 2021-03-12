@@ -9,6 +9,10 @@ public:
     ~Dispatch();
 };
 
+class CloseServer : public Dispatch
+{
+};
+
 class BuyServer : public Dispatch
 {
 private:

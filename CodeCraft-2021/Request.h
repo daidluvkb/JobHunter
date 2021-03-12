@@ -9,6 +9,8 @@ public:
 };
 class AddRequest : public Request
 {
+    public:
+    AddRequest();
 };
 
 class DelRequest : public Request
