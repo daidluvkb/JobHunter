@@ -3,7 +3,24 @@
 #include <fstream>
 #include <cassert>
 #include <unordered_map>
+#include "Scheduler.h"
+#include "VirtualMachine.h"
+bool todayHasRequest
+(
+
+);
+
 int main()
+{
+	readFile();
+	Scheduler scheduler;
+	while(true){
+		scheduler.deletVM(vector<shared_pt<VirtualMachine>ptr);
+		scheduler.add(vector);
+	}
+	return 0;
+}
+int old_main()
 {
 	using namespace std;
 	string testdataname = "../../training-data/training-1.txt";
@@ -66,5 +83,7 @@ int main()
 	// TODO:write standard output
 	// TODO:fflush(stdout);
 
+
+	// while()
 	return 0;
 }
