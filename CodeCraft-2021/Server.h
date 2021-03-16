@@ -1,20 +1,21 @@
-#ifndef _SERVER_
-#define _SERVER_
 #include <iostream>
 #include <string>
+
 using namespace std;
 
-class Server
-{
-public:
-Server(const string& type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday);
-private:
-    string _id;
-    string _type;
-    int _num_of_cpu;
-    int _size_of_mem;
-    const int _cost_base;
-    const int _cost_perday;
-
+class Server{
+    private:
+        string m_type;
+        int m_num_of_cpu;
+        int m_size_of_mem;
+        const int m_cost_base;
+        const int m_cost_perday;
+    public:
+        Server();
+        Server(const string& type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday);
+        
+        int getNumOfCpu();
+        int getSizeOfMem();
+        int getCostBase();
+        int getCostPerDay();
 };
-#endif
