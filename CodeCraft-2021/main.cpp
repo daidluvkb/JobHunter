@@ -60,15 +60,16 @@ void makeNewVM(string & s){
     vmInfos.insert(make_pair(id, vmInfo));
 }
 
-void addNewVM(string & s){
+void addNewVM(string & s, vector<shared_ptr<VirtualMachine>> & oneDayVM){
     int id_h = s.find(' ');
     int id_t = s.find(',', id_h);
     string id = s.substr(id_h + 1, id_t - id_h - 1);
     int index_h = s.find(' ', id_t);
     int index_t = s.find(')', index_h);
     int index = stoi(s.substr(index_h + 1, index_t - index_h - 1));
-    HostInfo itr = hostInfos.find(id)->second;
-    VirtualMachine newVM(id, itr);
+    VMInfo itr = vmInfos.find(id)->second;
+    shared_ptr<VirtualMachine> ptr(make_shared<VirtualMachine>(id, itr.cpu, itr.mem, itr.isDouble, index));
+    oneDayVM.push_back(ptr);
 }
 
 
@@ -95,13 +96,22 @@ void readFile(const string & testName, Scheduler & scheduler){
         for(int i = 0; i < days; i++){
             getline(infile, s);
             int reqNum = stoi(s);
+            vector<shared_ptr<VirtualMachine>> oneDayAddVM;
+            vector<int> oneDayDelVM;
             for (int j = 0; j < reqNum; j++){
                 getline(infile, s);
-                if(s.substr(0, 4) == "(add"){
-                    addNewVM(s);
+                if(s.substr(0, 4) == "(add") {
+                    addNewVM(s, oneDayAddVM);
+                }else if(s.substr(0, 3) == "(vm"){
+                    int id_h = s.find(' ');
+                    int id_t = s.find(',', id_h);
+                    int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
+                    oneDayDelVM.push_back(index);
                 }
-
             }
+
+            scheduler.deletVM(oneDayDelVM);
+            scheduler.addVM(oneDayAddVM);
         }
 
 
@@ -116,10 +126,10 @@ int main()
 	readFile(testDataName, scheduler);
 
 
-	while(true){
-		scheduler.deletVM(vector<shared_pt<VirtualMachine>ptr);
-		scheduler.add(vector);
-	}
+//	while(true){
+//		scheduler.deletVM(vector<shared_pt<VirtualMachine>ptr);
+//		scheduler.add(vector);
+//	}
 	return 0;
 }
 int old_main()
