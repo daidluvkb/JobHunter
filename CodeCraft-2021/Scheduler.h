@@ -7,28 +7,26 @@
 using namespace std;
 class Scheduler
 {
-
 private:
     /* data */
-    unordered_map <int, VirtualMachine &> _vms;
-    vector <shared_ptr<Host>> _free_host;
-    vector <shared_ptr<Host>> _busy_host;
+    unordered_map<int, shared_ptr<VirtualMachine>> _vms;
+    vector<shared_ptr<Host>> _free_host;
+    vector<shared_ptr<Host>> _busy_host;
     void deleteVM(const int id);
-    void addVM(const int id);
+    void addVM(shared_ptr<VirtualMachine>& vm);
+    void sumRequest(int &cpu, int &mem, const vector<shared_ptr<VirtualMachine>> &request);
+
 public:
     Scheduler(/* args */);
     ~Scheduler();
     void deletVM(vector<int> &ptr);
     void addVM(vector<shared_ptr<VirtualMachine>> &ptr);
     void shutHost(shared_ptr<Host>);
-    shared_ptr <Host> haveFreeHost();
+    shared_ptr<Host> haveFreeHost();
     void buyHosts(int cpu, int mem);
     void buyAHost(int cpu, int mem);
-    void sumRequest(int& cpu, int& mem, const vector<shared_ptr<VirtualMachine>> &request);
-    unordered_map <string, int> getNewPurchasedHosts(); // get purchased hosts every day  
+    unordered_map<string, int> getNewPurchasedHosts(); // get purchased hosts every day
     // void migration();
 };
-
-
 
 #endif
