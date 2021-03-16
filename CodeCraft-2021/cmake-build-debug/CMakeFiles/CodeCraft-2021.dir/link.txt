@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -Wall -std=c++11  -rdynamic CMakeFiles/CodeCraft-2021.dir/Dispatch.cpp.o CMakeFiles/CodeCraft-2021.dir/Host.cpp.o CMakeFiles/CodeCraft-2021.dir/Request.cpp.o CMakeFiles/CodeCraft-2021.dir/Scheduler.cpp.o CMakeFiles/CodeCraft-2021.dir/VirtualMachine.cpp.o CMakeFiles/CodeCraft-2021.dir/main.cpp.o  -o ../bin/CodeCraft-2021 

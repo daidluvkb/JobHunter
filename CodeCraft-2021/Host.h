@@ -1,3 +1,5 @@
+#ifndef _HOST_H
+#define _HOST_H
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -31,3 +33,5 @@ class Host{
         bool isFree();
         
 };
+
+#endif

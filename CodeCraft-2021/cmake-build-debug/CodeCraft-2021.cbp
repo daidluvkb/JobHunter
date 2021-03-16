@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="CodeCraft-2021"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CodeCraft-2021">
+				<Option output="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/bin/CodeCraft-2021" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/../bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/lib"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 CodeCraft-2021"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="CodeCraft-2021/fast">
+				<Option output="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/bin/CodeCraft-2021" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/../bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/lib"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 CodeCraft-2021/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/Dispatch.cpp">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/Dispatch.h">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/Host.cpp">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/Host.h">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/Request.cpp">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/Request.h">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/Scheduler.cpp">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/Scheduler.h">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/VirtualMachine.cpp">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/VirtualMachine.h">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/main.cpp">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/utils.h">
+			<Option target="CodeCraft-2021"/>
+		</Unit>
+		<Unit filename="/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,7 +1,6 @@
 #include "VirtualMachine.h"
-
-VirtualMachine::VirtualMachine()
-:m_is_double_node(false){}
+#include <memory>
+using namespace std;
 
 VirtualMachine::VirtualMachine(string& type, int num_of_cpu, int size_of_mem, bool is_double_node)
 :m_type(type), m_num_of_cpu(num_of_cpu), m_size_of_mem(size_of_mem), m_is_double_node(is_double_node){
@@ -18,3 +17,13 @@ int VirtualMachine::getSizeOfMem(){
 bool VirtualMachine::IsDoubleNode(){
     return m_is_double_node;
 }
+
+shared_ptr<Host> &VirtualMachine::getHost() {
+    return _host;
+}
+
+
+void VirtualMachine::setHost(shared_ptr<Host> & host){
+    _host = host;
+}
+

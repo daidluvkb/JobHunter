@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/CodeCraft-2021.cpp
+iostream
+/home/czy/MyWorkSpace/JobHunter/CodeCraft-2021/iostream
+

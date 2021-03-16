@@ -1,24 +1,29 @@
+#ifndef _VM_H_
+#define _VM_H
 #include <iostream>
 #include <string>
-#include "Host.h"
 #include <memory>
+//#include "Host.h"
 using namespace std;
 
+extern class Host;
 class VirtualMachine{
     private:
-        string m_type;
-        int m_num_of_cpu;
-        int m_size_of_mem;
+        const string m_type;
+        const int m_num_of_cpu;
+        const int m_size_of_mem;
         const bool m_is_double_node;
         shared_ptr <Host> _host;
     public:
 
-        VirtualMachine();
+//        VirtualMachine();
         VirtualMachine(string& type, int num_of_cpu, int size_of_mem, bool is_double_node);
         
         int getNumOfCpu();
         int getSizeOfMem();
         bool IsDoubleNode();
-        shared_ptr<Host> & getHost();
+        shared_ptr<Host> & getHost(); // get the host's pointer
         void setHost(shared_ptr<Host> & host);
 };
+
+#endif
