@@ -3,9 +3,11 @@
 #include <unordered_map>
 #include "VirtualMachine.h"
 #include "Host.h"
+#include <vector>
+using namespace std;
 class Scheduler
 {
-using namespace std;
+
 private:
     /* data */
     unordered_map <int, VirtualMachine &> _vms;
@@ -16,7 +18,7 @@ private:
 public:
     Scheduler(/* args */);
     ~Scheduler();
-    void deletVM(vector<shared_ptr<VirtualMachine>> &ptr);
+    void deletVM(vector<int> &ptr);
     void addVM(vector<shared_ptr<VirtualMachine>> &ptr);
     void shutHost(shared_ptr<Host>);
     shared_ptr <Host> haveFreeHost();

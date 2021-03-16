@@ -13,14 +13,14 @@ class Host{
         const int m_size_of_mem;
         const int m_cost_base;
         const int m_cost_perday;
+        const int m_index;
         unordered_map <int, shared_ptr <VirtualMachine>> _vms;
         int _left_cpu_A;
         int _left_cpu_B;
         int _left_mem_A;
         int _left_mem_B;
     public:
-        Host();
-        Host(const string& type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday);
+        Host(const string& type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday, int index);
         
         int getNumOfCpu();
         int getSizeOfMem();

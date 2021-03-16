@@ -60,8 +60,19 @@ void makeNewVM(string & s){
     vmInfos.insert(make_pair(id, vmInfo));
 }
 
+void addNewVM(string & s){
+    int id_h = s.find(' ');
+    int id_t = s.find(',', id_h);
+    string id = s.substr(id_h + 1, id_t - id_h - 1);
+    int index_h = s.find(' ', id_t);
+    int index_t = s.find(')', index_h);
+    int index = stoi(s.substr(index_h + 1, index_t - index_h - 1));
+    HostInfo itr = hostInfos.find(id)->second;
+    VirtualMachine newVM(id, itr);
+}
 
-void readFile(const string & testName){
+
+void readFile(const string & testName, Scheduler & scheduler){
         ifstream infile(testName, ios::in);
         assert(infile.is_open());
         string s; //This variable stores the strings parsed every line
@@ -87,7 +98,7 @@ void readFile(const string & testName){
             for (int j = 0; j < reqNum; j++){
                 getline(infile, s);
                 if(s.substr(0, 4) == "(add"){
-                    
+                    addNewVM(s);
                 }
 
             }

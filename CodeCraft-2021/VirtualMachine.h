@@ -13,11 +13,12 @@ class VirtualMachine{
         const int m_num_of_cpu;
         const int m_size_of_mem;
         const bool m_is_double_node;
+        const int m_index;
         shared_ptr <Host> _host;
     public:
 
 //        VirtualMachine();
-        VirtualMachine(string& type, int num_of_cpu, int size_of_mem, bool is_double_node);
+        VirtualMachine(string& type, int num_of_cpu, int size_of_mem, bool is_double_node, int index);
         
         int getNumOfCpu();
         int getSizeOfMem();
