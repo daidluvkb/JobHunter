@@ -68,27 +68,31 @@ int Host::getIndex()
     return m_index;
 }
 
-void Host::addVM(shared_ptr<VirtualMachine>& vm){
+bool Host::addVM(shared_ptr<VirtualMachine>& vm){
     _vms[vm->getId()] = vm;
     if(vm->IsDoubleNode() == 0){
         _left_cpu_A -= (vm->getNumOfCpu() / 2);
         _left_cpu_B -= (vm->getNumOfCpu() / 2);
         _left_mem_A -= (vm->getSizeOfMem() / 2);
         _left_mem_B -= (vm->getSizeOfMem() / 2);
+
+        return true;
     }
     else{
-        if(_left_mem_A > _left_mem_B){
+        if(_left_mem_A > _left_mem_B && _left_cpu_A > vm->getNumOfCpu()){
             vm->setNode(true);
             _left_cpu_A -= vm->getNumOfCpu();
             _left_mem_A -= vm->getSizeOfMem();
+            return true;
         }
-        else{
+        else if(_left_mem_B > _left_mem_A && _left_cpu_B > vm->getNumOfCpu()){
             vm->setNode(false);
             _left_cpu_B -= vm->getNumOfCpu();
             _left_mem_B -= vm->getSizeOfMem();
+            return true;
         }
     }
-    return;
+    return false;
 }
 
 int Host::getAvailableCpu(bool isDouble){

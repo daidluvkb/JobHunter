@@ -31,7 +31,7 @@ class Host{
 
         void deleteVM(int id);
         int getIndex();
-        void addVM(shared_ptr<VirtualMachine>& vm);
+        bool addVM(shared_ptr<VirtualMachine>& vm);
         //void addVM(int id, bool left); // A or B 
         int getAvailableCpu(bool isDouble);
         int getAvailableMem(bool isDouble);

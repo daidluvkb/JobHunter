@@ -70,6 +70,7 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
 {
 
     bool is_double = !vm->IsDoubleNode();
+    /*
     for (size_t i = 0; i < _busy_host.size(); i++)
     {
         if (_busy_host[i]->getAvailableCpu(is_double) > vm->getNumOfCpu() &&
@@ -83,6 +84,24 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
             return;
         }
     }
+    */
+
+   for(size_t i = 0; i < _busy_host.size(); i++){
+       if(is_double){
+           if(_busy_host[i]->getAvailableCpu(true) > (vm->getNumOfCpu() / 2) &&
+              _busy_host[i]->getAvailableMem(true) > (vm->getSizeOfMem() / 2))
+              _busy_host[i]->addVM(vm);
+              vm->setHost(_busy_host[i]);
+              return;
+       }
+       else{
+           if(_busy_host[i]->getAvailableCpu(false) > vm->getNumOfCpu() &&
+              _busy_host[i]->getAvailableMem(false) > vm->getSizeOfMem())
+              if(_busy_host[i]->addVM(vm)){
+                  vm->setHost(_busy_host[i]);
+              }
+       }
+   }
 
     if (!_free_host.size()) //
     {
