@@ -1,11 +1,26 @@
 #include "Scheduler.h"
+
 Scheduler::Scheduler(/* args */)
 {
+    _host_cheapest = 0;
+    _host_candidates.reserve(hostInfos.size());
+    for (auto itr = hostInfos.begin(); itr != hostInfos.end(); itr++)
+    {
+        size_t j = 0;
+        for (; j < _host_candidates.size(); j++)
+        {
+            if(_host_candidates[j].basicCost > itr->second.basicCost)
+            {   
+                break;
+            }
+        }        
+    }
 }
 
 Scheduler::~Scheduler()
 {
 }
+
 
 void Scheduler::deletVM(vector<int> &vms) 
 {
@@ -60,6 +75,21 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
         return;
     }
     buyAHost(vm->getNumOfCpu(), vm->getSizeOfMem());
+}
+
+void Scheduler::shutHost(shared_ptr<Host> &host)
+{
+    _free_host.emplace_back(host);
+}
+
+void Scheduler::buyHosts(int cpu, int mem) 
+{
+    
+}
+
+void Scheduler::buyAHost(int cpu, int mem) 
+{
+    
 }
 
 void Scheduler::sumRequest(int &cpu, int &mem, const vector<shared_ptr<VirtualMachine>> &request) 
