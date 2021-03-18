@@ -137,7 +137,10 @@ void Scheduler::buyHosts(const int cpu, const int mem)
 void Scheduler::declareANewDay() 
 {
     _today_purchased_hosts.clear();
-    _today_add_arrangement.clear();
+    // _today_add_arrangement.clear();
+    _today_add_arrangement.str("");
+    // cout << "today arrange: " << _today_add_arrangement.str();
+    // fflush(stdout);
 }
 
 void Scheduler::getTodayAddVMArrangment()

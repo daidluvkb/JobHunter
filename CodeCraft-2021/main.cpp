@@ -81,32 +81,32 @@ void readFile(const string & testName, Scheduler & scheduler){
         // assert(infile.is_open());
         auto& infile = cin;
         string s; //This variable stores the strings parsed every line
-        getline(infile, s);
+        getline(infile, s);fflush(stdin);
         int hostsTypeNum = stoi(s);
         for (int i = 0; i < hostsTypeNum; i++){
-            getline(infile, s);
+            getline(infile, s);fflush(stdin);
             makeNewHost(s);
         }
 
         scheduler.setHostCandidates(hostInfos);
         
-        getline(infile, s);
+        getline(infile, s);fflush(stdin);
         int vmTypeNum = stoi(s);
         for (int i = 0; i < vmTypeNum ; i++){
-            getline(infile, s);
+            getline(infile, s);fflush(stdin);
             makeNewVM(s);
         }
 
-        getline(infile, s);
+        getline(infile, s);fflush(stdin);
         int days = stoi(s);
 
         for(int i = 0; i < days; i++){
-            getline(infile, s);
+            getline(infile, s);fflush(stdin);
             int reqNum = stoi(s);
             vector<shared_ptr<VirtualMachine>> oneDayAddVM;
             vector<int> oneDayDelVM;
             for (int j = 0; j < reqNum; j++){
-                getline(infile, s);
+                getline(infile, s);fflush(stdin);
                 if(s.substr(0, 4) == "(add") {
                     addNewVM(s, oneDayAddVM);
                 }else if(s.substr(0, 4) == "(del"){
@@ -114,86 +114,6 @@ void readFile(const string & testName, Scheduler & scheduler){
                     int id_h = s.find(' ');
                     int id_t = s.find(',', id_h);
                     int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
-                    oneDayDelVM.push_back(index);
-                }
-            }
-            
-            scheduler.declareANewDay();
-            scheduler.deleteVM(oneDayDelVM);
-            scheduler.addVM(oneDayAddVM);
-            // cout << i << endl;
-            auto today_purchased_result = scheduler.getNewPurchasedHosts();
-            scheduler.getTodayMigration();
-            scheduler.getTodayAddVMArrangment();
-            // exit(0);
-        }
-
-
-}
-void readOj(Scheduler & scheduler){
-        string s; //This variable stores the strings parsed every line
-
-        while (cin >> s)
-        {
-            if (cin.get() == '\n')
-                break;
-        }
-        int hostsTypeNum = stoi(s);
-        for (int i = 0; i < hostsTypeNum; i++){
-            char host_str[100];
-            string tmp;
-            cin.getline(host_str, 100, '\n');
-            // while (cin >> tmp)
-            // {
-            //     if (cin.get() == '\n')
-            //         break;
-            // }
-            cout << host_str << endl;
-            // makeNewHost((host_str));            
-        }
-
-        scheduler.setHostCandidates(hostInfos);
-        s.clear();
-        while (cin >> s)
-        {
-            if (cin.get() == '\n')
-                break;
-        }
-        int vmTypeNum = stoi(s);
-        for (int i = 0; i < vmTypeNum ; i++){
-            string vm_str;
-            cin >> vm_str;
-            // getline(infile, s);
-            makeNewVM(vm_str);
-        }
-        s.clear();
-        while (cin >> s)
-        {
-            if (cin.get() == '\n')
-                break;
-        }
-        // getline(infile, s);
-        int days = stoi(s);
-
-        for(int i = 0; i < days; i++){
-            string day_str;
-            while (cin >> day_str)
-            {
-                if (cin.get() == '\n')
-                    break;
-            }
-            int reqNum = stoi(day_str);
-            vector<shared_ptr<VirtualMachine>> oneDayAddVM;
-            vector<int> oneDayDelVM;
-            for (int j = 0; j < reqNum; j++){
-                // getline(infile, s);
-                string dayreq_str;
-                if(dayreq_str.substr(0, 4) == "(add") {
-                    addNewVM(s, oneDayAddVM);
-                }else if(dayreq_str.substr(0, 4) == "(del"){
-                    int id_h = dayreq_str.find(' ');
-                    int id_t = dayreq_str.find(',', id_h);
-                    int index = stoi(dayreq_str.substr(id_h + 1, id_t - id_h - 1));
                     oneDayDelVM.push_back(index);
                 }
             }
