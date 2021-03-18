@@ -219,7 +219,7 @@ int main()
     //定义clock_t变量
     start = clock();
     string testDataName = "../training-data/training-1.txt";
-    dcout << "Begin to schdule!" << endl;
+    //dcout << "Begin to schdule!" << endl;
     //    ifstream infile(testDataName, ios::in);
     // return 0;
     Scheduler scheduler;
@@ -231,7 +231,7 @@ int main()
     //		scheduler.add(vector);
     //	}
 
-    end = clock();                                                            //结束时间
+    end = clock();                                                            
     // cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
 
     return 0;

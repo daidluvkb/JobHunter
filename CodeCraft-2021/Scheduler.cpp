@@ -140,9 +140,10 @@ void Scheduler::declareANewDay()
     _today_add_arrangement.clear();
 }
 
-void Scheduler::getTodayAddVMArrangment() 
+void Scheduler::getTodayAddVMArrangment()
 {
-    cout << _today_add_arrangement.str();
+    printf("%s", _today_add_arrangement.str().c_str());
+    fflush(stdout);
 }
 
 vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts() 
@@ -153,8 +154,12 @@ vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts()
     //     pur_num += i.second;
     // }
     printf("(purchase, %d)\n", _today_purchased_hosts.size());
-    for(auto i: _today_purchased_hosts)
+    fflush(stdout);
+    for (auto i : _today_purchased_hosts)
+    {
         printf("(%s, %d)\n", i.first.c_str(), i.second);
+        fflush(stdout);
+    }
         // cout << "(" << i.first << ", " << i.second << ")" << endl;
     return vector<shared_ptr<const HostInfo>>();
 }
@@ -162,6 +167,7 @@ vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts()
 void Scheduler::getTodayMigration() 
 {
     printf( "(migration, 0)\n");
+    fflush(stdout);
     // cout << "(migration, 0)"<< endl;
 }
 /**
