@@ -1,3 +1,0 @@
-/home/czy/MyWorkSpace/JobHunter/build/CMakeFiles/edit_cache.dir
-/home/czy/MyWorkSpace/JobHunter/build/CMakeFiles/rebuild_cache.dir
-/home/czy/MyWorkSpace/JobHunter/build/CMakeFiles/CodeCraft-2021.dir
