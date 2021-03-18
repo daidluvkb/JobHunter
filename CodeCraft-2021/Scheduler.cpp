@@ -147,15 +147,22 @@ void Scheduler::getTodayAddVMArrangment()
 
 vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts() 
 {
-    cout << "(purchase, " << _today_purchased_hosts.size() << ")" << endl;
+    int pur_num = 0;
+    for (auto& i : _today_purchased_hosts)
+    {
+        pur_num += i.second;
+    }
+    printf("(purchase, %d)\n", pur_num);
     for(auto i: _today_purchased_hosts)
-        cout << "(" << i.first << ", " << i.second << ")" << endl;
+        printf("(%s, %d)\n", i.first.c_str(), i.second);
+        // cout << "(" << i.first << ", " << i.second << ")" << endl;
     return vector<shared_ptr<const HostInfo>>();
 }
 
 void Scheduler::getTodayMigration() 
 {
-    cout << "(migration, 0)"<< endl;
+    printf( "(migration, 0)\n");
+    // cout << "(migration, 0)"<< endl;
 }
 /**
  * describe: only make a choice, dont buy(record in everyday purchased list)

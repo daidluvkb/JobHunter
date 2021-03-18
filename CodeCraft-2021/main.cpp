@@ -7,6 +7,7 @@
 #include "VirtualMachine.h"
 #include "utils.h"
 using namespace std;
+#include <bits/stdc++.h>
 
 unordered_map<string, HostInfo> hostInfos;
 unordered_map<string, VMInfo> vmInfos;
@@ -76,8 +77,9 @@ void addNewVM(string & s, vector<shared_ptr<VirtualMachine>> & oneDayVM){
 
 
 void readFile(const string & testName, Scheduler & scheduler){
-        ifstream infile(testName, ios::in);
-        assert(infile.is_open());
+        // ifstream infile(testName, ios::in);
+        // assert(infile.is_open());
+        auto& infile = cin;
         string s; //This variable stores the strings parsed every line
         getline(infile, s);
         int hostsTypeNum = stoi(s);
@@ -120,9 +122,9 @@ void readFile(const string & testName, Scheduler & scheduler){
             scheduler.deleteVM(oneDayDelVM);
             scheduler.addVM(oneDayAddVM);
             // cout << i << endl;
-            // auto today_purchased_result = scheduler.getNewPurchasedHosts();
-            // scheduler.getTodayMigration();
-            // scheduler.getTodayAddVMArrangment();
+            auto today_purchased_result = scheduler.getNewPurchasedHosts();
+            scheduler.getTodayMigration();
+            scheduler.getTodayAddVMArrangment();
             // exit(0);
         }
 
@@ -130,17 +132,33 @@ void readFile(const string & testName, Scheduler & scheduler){
 }
 void readOj(Scheduler & scheduler){
         string s; //This variable stores the strings parsed every line
-        cin >> s;
+
+        while (cin >> s)
+        {
+            if (cin.get() == '\n')
+                break;
+        }
         int hostsTypeNum = stoi(s);
         for (int i = 0; i < hostsTypeNum; i++){
-            string host_str;
-            cin >> host_str;
-            makeNewHost(host_str);            
+            char host_str[100];
+            string tmp;
+            cin.getline(host_str, 100, '\n');
+            // while (cin >> tmp)
+            // {
+            //     if (cin.get() == '\n')
+            //         break;
+            // }
+            cout << host_str << endl;
+            // makeNewHost((host_str));            
         }
 
         scheduler.setHostCandidates(hostInfos);
         s.clear();
-        cin >> s;
+        while (cin >> s)
+        {
+            if (cin.get() == '\n')
+                break;
+        }
         int vmTypeNum = stoi(s);
         for (int i = 0; i < vmTypeNum ; i++){
             string vm_str;
@@ -149,13 +167,21 @@ void readOj(Scheduler & scheduler){
             makeNewVM(vm_str);
         }
         s.clear();
-        cin >> s;
+        while (cin >> s)
+        {
+            if (cin.get() == '\n')
+                break;
+        }
         // getline(infile, s);
         int days = stoi(s);
 
         for(int i = 0; i < days; i++){
             string day_str;
-            cin >> day_str;
+            while (cin >> day_str)
+            {
+                if (cin.get() == '\n')
+                    break;
+            }
             int reqNum = stoi(day_str);
             vector<shared_ptr<VirtualMachine>> oneDayAddVM;
             vector<int> oneDayDelVM;
@@ -187,6 +213,8 @@ void readOj(Scheduler & scheduler){
 
 int main()
 {
+   
+    ios::sync_with_stdio(false);
     clock_t start, end;
     //定义clock_t变量
     start = clock();
@@ -204,7 +232,7 @@ int main()
     //	}
 
     end = clock();                                                            //结束时间
-    cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
+    // cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
 
     return 0;
 }
@@ -213,7 +241,7 @@ int old_main()
 	using namespace std;
 	string testdataname = "../../training-data/training-1.txt";
 	ifstream infile(testdataname, ios::in);
-
+    
     assert(infile.is_open());   //若失败,则输出错误消息,并终止程序运行
 	unordered_map<string, pair<int, int>> vms;
 	unsigned long long cpu_req = 0, mem_req = 0;
