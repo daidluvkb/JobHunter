@@ -6,17 +6,21 @@
 #include <vector>
 #include "utils.h"
 
-extern unordered_map<string, HostInfo> hostInfos;
+#include <sstream>
 
 using namespace std;
 class Scheduler
 {
 private:
     /* data */
+    stringstream _today_add_arrangement;
+    unordered_map<string, int> _today_purchased_hosts;//host type/name and cnt;
+private:
     vector<HostInfo> _host_candidates;
     unordered_map<int, shared_ptr<VirtualMachine>> _vms;
     vector<shared_ptr<Host>> _free_host;
     vector<shared_ptr<Host>> _busy_host;
+    vector<shared_ptr<Host>> _hosts;
     int _host_cheapest;
 private:
     /* method */
@@ -27,19 +31,21 @@ private:
 private:
     /**temporary*/
     void findCheapestHost();
+    void _buyAHost(const HostInfo& host);
     
 public:
     Scheduler(/* args */);
     ~Scheduler();
-    void deletVM(vector<int> &ptr);
+    void setHostCandidates(unordered_map<string, HostInfo> &hostInfos);
+    void deleteVM(vector<int> &ptr);
     void addVM(vector<shared_ptr<VirtualMachine>> &ptr);
     void shutHost(shared_ptr<Host> &host);
-    shared_ptr<Host> haveFreeHost();
     void buyHosts(int cpu, int mem);
-    void buyAHost(int cpu, int mem);
-
-    unordered_map<string, int> getNewPurchasedHosts(); // get purchased hosts every day
-    // void migration();
+    shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
+    void declareANewDay();
+    void getTodayAddVMArrangment();
+    vector<shared_ptr<const HostInfo>> getNewPurchasedHosts(); // get purchased hosts every day
+    void getTodayMigration();
 };
 
 #endif

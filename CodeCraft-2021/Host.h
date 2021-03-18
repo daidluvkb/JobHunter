@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "VirtualMachine.h"
 #include "math.h"
+#include "utils.h"
 using namespace std;
 
 class Host{
@@ -21,14 +22,15 @@ class Host{
         int _left_mem_A;
         int _left_mem_B;
     public:
-        Host(const string& type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday, int index);
-        
+        Host(const string &type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday, int index);
+        Host(const HostInfo &hostinfo, const int index);
         int getNumOfCpu();
         int getSizeOfMem();
         int getCostBase();
         int getCostPerDay();
 
         void deleteVM(int id);
+        int getIndex();
         void addVM(shared_ptr<VirtualMachine>& vm);
         //void addVM(int id, bool left); // A or B 
         int getAvailableCpu(bool isDouble);

@@ -5,12 +5,25 @@ Host::Host(const string& type, int num_of_cpu, int size_of_mem, int cost_base, i
 :m_type(type), m_num_of_cpu(num_of_cpu), m_size_of_mem(size_of_mem), m_cost_base(cost_base), m_cost_perday(cost_perday),
 m_index(index){
     _left_cpu_A = num_of_cpu / 2;
-    _left_cpu_B = _left_mem_A;
+    _left_cpu_B = _left_cpu_A;
     _left_mem_A = size_of_mem / 2;
     _left_mem_B = _left_mem_A;
 }
 
-int Host::getNumOfCpu(){
+Host::Host(const HostInfo &hostinfo, const int index)
+    : m_type(hostinfo.type),
+      m_num_of_cpu(hostinfo.cpu), m_size_of_mem(hostinfo.mem),
+      m_cost_base(hostinfo.basicCost), m_cost_perday(hostinfo.dailyCost),
+      m_index(index)
+{    
+    _left_cpu_A = m_num_of_cpu / 2;
+    _left_cpu_B = _left_cpu_A;
+    _left_mem_A = m_size_of_mem / 2;
+    _left_mem_B = _left_mem_A;
+}
+
+int Host::getNumOfCpu()
+{
     return m_num_of_cpu;
 }
 
@@ -48,6 +61,11 @@ void Host::deleteVM(int id){
     _vms.erase(id);
 
     return;
+}
+
+int Host::getIndex() 
+{
+    return m_index;
 }
 
 void Host::addVM(shared_ptr<VirtualMachine>& vm){

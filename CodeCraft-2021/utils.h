@@ -4,12 +4,17 @@
 
 #ifndef CODECRAFT_2021_UTILS_H
 #define CODECRAFT_2021_UTILS_H
+#include <string>
+#define dcout 0 && cout//或者NULL && cout
+// #define dcout cout
+
 
 typedef struct HostInfo{
     int cpu;
     int mem;
     int basicCost;
     int dailyCost;
+    std::string type;
 }HostInfo;
 
 typedef struct VMInfo{
