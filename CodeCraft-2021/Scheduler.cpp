@@ -147,12 +147,12 @@ void Scheduler::getTodayAddVMArrangment()
 
 vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts() 
 {
-    int pur_num = 0;
-    for (auto& i : _today_purchased_hosts)
-    {
-        pur_num += i.second;
-    }
-    printf("(purchase, %d)\n", pur_num);
+    // int pur_num = 0;
+    // for (auto& i : _today_purchased_hosts)
+    // {
+    //     pur_num += i.second;
+    // }
+    printf("(purchase, %d)\n", _today_purchased_hosts.size());
     for(auto i: _today_purchased_hosts)
         printf("(%s, %d)\n", i.first.c_str(), i.second);
         // cout << "(" << i.first << ", " << i.second << ")" << endl;
