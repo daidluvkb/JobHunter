@@ -86,26 +86,40 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
     }
     */
 
-   for(size_t i = 0; i < _busy_host.size(); i++){
-       if(is_double){
-           if(_busy_host[i]->getAvailableCpu(true) > (vm->getNumOfCpu() / 2) &&
-              _busy_host[i]->getAvailableMem(true) > (vm->getSizeOfMem() / 2))
-              _busy_host[i]->addVM(vm);
-              vm->setHost(_busy_host[i]);
-              return;
-       }
-       else{
-           if(_busy_host[i]->getAvailableCpu(false) > vm->getNumOfCpu() &&
-              _busy_host[i]->getAvailableMem(false) > vm->getSizeOfMem())
-              if(_busy_host[i]->addVM(vm)){
-                  vm->setHost(_busy_host[i]);
-              }
-       }
-   }
+    for (size_t i = 0; i < _busy_host.size(); i++)
+    {
+        if (is_double)
+        {
+            if (_busy_host[i]->getAvailableCpu(true) > (vm->getNumOfCpu() / 2) &&
+                _busy_host[i]->getAvailableMem(true) > (vm->getSizeOfMem() / 2))
+            {
+                _busy_host[i]->addVM(vm);
+                vm->setHost(_busy_host[i]);
+                return;
+            }
+        }
+        else
+        {
+            if (_busy_host[i]->getAvailableCpu(false) > vm->getNumOfCpu() &&
+                _busy_host[i]->getAvailableMem(false) > vm->getSizeOfMem())
+                if (_busy_host[i]->addVM(vm))
+                {
+                    vm->setHost(_busy_host[i]);
+                    return;
+                }
+        }
+    }
 
     if (!_free_host.size()) //
     {
-        auto host = chooseAHost(vm->getNumOfCpu(), vm->getSizeOfMem());
+        shared_ptr<const HostInfo> host;
+        if(is_double)
+            host = chooseAHost(vm->getNumOfCpu(), vm->getSizeOfMem());
+        else
+        {
+            host = chooseAHost(vm->getNumOfCpu() * 2, vm->getSizeOfMem() * 2);
+        }
+
         if (host){
             _buyAHost(*host);            
             //record buying action

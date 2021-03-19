@@ -55,7 +55,13 @@ char VirtualMachine::getNode()
     {
         return 'B';
     }
-    return ' '; 
+    if (m_is_double_node == -1)
+    {
+        // cout << 'C' << endl;
+        return 'C';
+    }
+    // cout << 'D' << endl;
+    return 'D'; 
 }
 
 shared_ptr<Host> &VirtualMachine::getHost()

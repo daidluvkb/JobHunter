@@ -19,10 +19,10 @@ then
     exit
 fi
 
-rm -fr bin
-mkdir bin
-rm -fr build
-mkdir build
+# rm -fr bin
+# mkdir bin
+# rm -fr build
+# mkdir build
 cd build
 
 cmake ../CodeCraft-2021

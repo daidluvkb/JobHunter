@@ -10,6 +10,6 @@ then
     echo "  Please run this script in a regular directory of SDK_python."
     exit -1
 fi
-
+./build.sh
 rm -f CodeCraft-2021.zip
 zip -r CodeCraft-2021.zip ./bin/* ./build/* ./CodeCraft-2021/* ./*.sh

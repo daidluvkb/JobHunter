@@ -76,64 +76,84 @@ void addNewVM(string & s, vector<shared_ptr<VirtualMachine>> & oneDayVM){
 }
 
 
-void readFile(const string & testName, Scheduler & scheduler){
-        // ifstream infile(testName, ios::in);
-        // assert(infile.is_open());
-        auto& infile = cin;
-        string s; //This variable stores the strings parsed every line
-        getline(infile, s);fflush(stdin);
-        int hostsTypeNum = stoi(s);
-        for (int i = 0; i < hostsTypeNum; i++){
-            getline(infile, s);fflush(stdin);
-            makeNewHost(s);
-        }
+    #include <unistd.h>
+void readFile(const string &testName, Scheduler &scheduler)
+{
+    char cwd[50];
+    getcwd(cwd, 50);
+    string filename(cwd);
+    filename.append("/");
+    filename.append(testName);
 
-        scheduler.setHostCandidates(hostInfos);
-        
-        getline(infile, s);fflush(stdin);
-        int vmTypeNum = stoi(s);
-        for (int i = 0; i < vmTypeNum ; i++){
-            getline(infile, s);fflush(stdin);
-            makeNewVM(s);
-        }
+    ifstream infile(filename, ios::in);
+    assert(infile.is_open());
+    // auto &infile = cin;
+    string s; //This variable stores the strings parsed every line
+    getline(infile, s);
+    fflush(stdin);
+    int hostsTypeNum = stoi(s);
+    for (int i = 0; i < hostsTypeNum; i++)
+    {
+        getline(infile, s);
+        fflush(stdin);
+        makeNewHost(s);
+    }
 
-        getline(infile, s);fflush(stdin);
-        int days = stoi(s);
+    scheduler.setHostCandidates(hostInfos);
 
-        for(int i = 0; i < days; i++){
-            getline(infile, s);fflush(stdin);
-            int reqNum = stoi(s);
-            vector<shared_ptr<VirtualMachine>> oneDayAddVM;
-            vector<int> oneDayDelVM;
-            for (int j = 0; j < reqNum; j++){
-                getline(infile, s);fflush(stdin);
-                if(s.substr(0, 4) == "(add") {
-                    addNewVM(s, oneDayAddVM);
-                }else if(s.substr(0, 4) == "(del"){
-                    // cout << "del" << endl;
-                    int id_h = s.find(' ');
-                    int id_t = s.find(',', id_h);
-                    int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
-                    oneDayDelVM.push_back(index);
-                }
+    getline(infile, s);
+    fflush(stdin);
+    int vmTypeNum = stoi(s);
+    for (int i = 0; i < vmTypeNum; i++)
+    {
+        getline(infile, s);
+        fflush(stdin);
+        makeNewVM(s);
+    }
+
+    getline(infile, s);
+    fflush(stdin);
+    int days = stoi(s);
+
+    for (int i = 0; i < days; i++)
+    {
+        getline(infile, s);
+        fflush(stdin);
+        int reqNum = stoi(s);
+        vector<shared_ptr<VirtualMachine>> oneDayAddVM;
+        vector<int> oneDayDelVM;
+        for (int j = 0; j < reqNum; j++)
+        {
+            getline(infile, s);
+            fflush(stdin);
+            if (s.substr(0, 4) == "(add")
+            {
+                addNewVM(s, oneDayAddVM);
             }
-            
-            scheduler.declareANewDay();
-            scheduler.deleteVM(oneDayDelVM);
-            scheduler.addVM(oneDayAddVM);
-            // cout << i << endl;
-            auto today_purchased_result = scheduler.getNewPurchasedHosts();
-            scheduler.getTodayMigration();
-            scheduler.getTodayAddVMArrangment();
-            // exit(0);
+            else if (s.substr(0, 4) == "(del")
+            {
+                // cout << "del" << endl;
+                int id_h = s.find(' ');
+                int id_t = s.find(',', id_h);
+                int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
+                oneDayDelVM.push_back(index);
+            }
         }
 
-
+        scheduler.declareANewDay();
+        scheduler.deleteVM(oneDayDelVM);
+        scheduler.addVM(oneDayAddVM);
+        // cout << i << endl;
+        auto today_purchased_result = scheduler.getNewPurchasedHosts();
+        scheduler.getTodayMigration();
+        scheduler.getTodayAddVMArrangment();
+        // exit(0);
+    }
 }
 
 int main()
 {
-   
+
     ios::sync_with_stdio(false);
     clock_t start, end;
     //定义clock_t变量

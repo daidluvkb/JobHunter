@@ -69,30 +69,35 @@ int Host::getIndex()
 }
 
 bool Host::addVM(shared_ptr<VirtualMachine>& vm){
-    _vms[vm->getId()] = vm;
+    
+    bool success = false;
     if(vm->IsDoubleNode() == 0){
+        // cout << "vm: " << vm->getNumOfCpu() << '\t' << vm->getSizeOfMem()<< endl;
+        // print();
         _left_cpu_A -= (vm->getNumOfCpu() / 2);
         _left_cpu_B -= (vm->getNumOfCpu() / 2);
         _left_mem_A -= (vm->getSizeOfMem() / 2);
         _left_mem_B -= (vm->getSizeOfMem() / 2);
-
-        return true;
+        // print();
+        success = true;
     }
     else{
-        if(_left_mem_A > _left_mem_B && _left_cpu_A > vm->getNumOfCpu()){
+        if(_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu()){
             vm->setNode(true);
             _left_cpu_A -= vm->getNumOfCpu();
             _left_mem_A -= vm->getSizeOfMem();
-            return true;
+            success = true;
         }
-        else if(_left_mem_B > _left_mem_A && _left_cpu_B > vm->getNumOfCpu()){
+        else if(_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu()){
             vm->setNode(false);
             _left_cpu_B -= vm->getNumOfCpu();
             _left_mem_B -= vm->getSizeOfMem();
-            return true;
-        }
+            success = true;
+        }        
     }
-    return false;
+    if(success)
+        _vms[vm->getId()] = vm;
+    return success;
 }
 
 int Host::getAvailableCpu(bool isDouble){
@@ -108,4 +113,10 @@ int Host::getAvailableMem(bool isDouble){
 bool Host::isFree(){
     if(_left_cpu_A + _left_cpu_B == m_num_of_cpu)   return true;
     return false;
+}
+
+void Host::print() 
+{
+    cout << "left cpu :" << _left_cpu_A << '\t' << _left_cpu_B << endl;
+    cout << "left mem :" << _left_mem_A << '\t' << _left_mem_B << endl;
 }

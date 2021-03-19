@@ -36,6 +36,9 @@ class Host{
         int getAvailableCpu(bool isDouble);
         int getAvailableMem(bool isDouble);
         bool isFree();
+
+    private:
+        void print();
         
 };
 
