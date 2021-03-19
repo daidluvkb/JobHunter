@@ -12,6 +12,9 @@ using namespace std;
 class Scheduler
 {
 private:
+    unsigned long long cost;
+    int getTodayDailyCost();
+private:
     /* data */
     stringstream _today_add_arrangement;
     unordered_map<string, int> _today_purchased_hosts;//host type/name and cnt;
@@ -22,6 +25,7 @@ private:
     vector<shared_ptr<Host>> _busy_host;
     vector<shared_ptr<Host>> _hosts;
     int _host_cheapest;
+    int _today_add_arrangement_num;
 private:
     /* method */
     void deleteVM(const int id);
@@ -32,6 +36,8 @@ private:
     /**temporary*/
     void findCheapestHost();
     void _buyAHost(const HostInfo& host);
+    shared_ptr<Host> _buyAHost_immedidate(const HostInfo& host);
+    void _buyAHost_opt(const HostInfo& host);
     
 public:
     Scheduler(/* args */);
@@ -43,10 +49,11 @@ public:
     void shutHost(shared_ptr<Host> &host);
     void buyHosts(int cpu, int mem);
     void declareANewDay();
-    void getTodayAddVMArrangment();
+    int getTodayAddVMArrangment();
     vector<shared_ptr<const HostInfo>> getNewPurchasedHosts(); // get purchased hosts every day
 
     shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
+    unsigned long long getCost();
 
     /**
     *migration oprations

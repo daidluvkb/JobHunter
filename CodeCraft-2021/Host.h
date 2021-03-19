@@ -22,7 +22,7 @@ class Host{
         int _left_mem_A;
         int _left_mem_B;
     public:
-        void checkMyself();
+        void checkMyself() const;
         Host(const string &type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday, int index);
         Host(const HostInfo &hostinfo, const int index);
         int getNumOfCpu();
@@ -33,14 +33,14 @@ class Host{
         void deleteVM(int id);
         int getIndex();
         bool addVM(shared_ptr<VirtualMachine>& vm);
+        bool addVM_try(shared_ptr<VirtualMachine>& vm);
         //void addVM(int id, bool left); // A or B 
         int getAvailableCpu(bool isDouble);
         int getAvailableMem(bool isDouble);
         bool isFree();
 
     private:
-        void print();
-        
+        void print() const;
 };
 
 #endif

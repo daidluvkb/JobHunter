@@ -144,13 +144,13 @@ void readFile(const string &testName, Scheduler &scheduler)
         scheduler.declareANewDay();
         scheduler.deleteVM(oneDayDelVM);
         scheduler.addVM(oneDayAddVM);
-        if (i % 100 == 0)
-        {
-            // cout << i << endl;
-            auto today_purchased_result = scheduler.getNewPurchasedHosts();
-            scheduler.getTodayMigration();
-            // scheduler.getTodayAddVMArrangment();
-        }
+        // if (i % 100 == 0)
+        // {
+        //     // cout << i << endl;
+        auto today_purchased_result = scheduler.getNewPurchasedHosts();
+        scheduler.getTodayMigration();
+        scheduler.getTodayAddVMArrangment();
+        // }
         // exit(0);
     }
 }
@@ -175,7 +175,8 @@ int main()
     //		scheduler.add(vector);
     //	}
 
-    end = clock();                                                            
+    end = clock();   
+    // cout << "cost: " << scheduler.getCost() << endl;                                                         
     // cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
 
     return 0;
@@ -183,7 +184,7 @@ int main()
 int old_main()
 {
 	using namespace std;
-	string testdataname = "../../training-data/training-1.txt";
+	string testdataname = "../../training-data/training-2.txt";
 	ifstream infile(testdataname, ios::in);
     
     assert(infile.is_open());   //若失败,则输出错误消息,并终止程序运行

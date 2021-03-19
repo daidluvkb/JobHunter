@@ -25,7 +25,7 @@ fi
 # mkdir build
 cd build
 
-cmake ../CodeCraft-2021 -DCMAKE_BUILD_TYPE=Debug
+cmake ../CodeCraft-2021 -DCMAKE_BUILD_TYPE=Release
 tmp=$?
 echo "cmake return:" ${tmp}
 if [ ${tmp} -ne 0 ]

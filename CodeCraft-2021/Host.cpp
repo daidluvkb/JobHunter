@@ -100,6 +100,51 @@ bool Host::addVM(shared_ptr<VirtualMachine>& vm){
     return success;
 }
 
+bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
+{
+    bool success = false;
+    if (vm->IsDoubleNode() == 0)
+    {
+        // cout << "vm: " << vm->getNumOfCpu() << '\t' << vm->getSizeOfMem()<< endl;
+        // print();
+        if (getAvailableCpu(true) > (vm->getNumOfCpu() / 2) &&
+            getAvailableMem(true) > (vm->getSizeOfMem() / 2))
+        {
+            /* code */
+            _left_cpu_A -= (vm->getNumOfCpu() / 2);
+            _left_cpu_B -= (vm->getNumOfCpu() / 2);
+            _left_mem_A -= (vm->getSizeOfMem() / 2);
+            _left_mem_B -= (vm->getSizeOfMem() / 2);
+            // print();
+            success = true;
+        }
+    }
+    else
+    {
+        if (getAvailableCpu(false) > vm->getNumOfCpu() &&
+            getAvailableMem(false) > vm->getSizeOfMem())
+        {
+            if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
+            {
+                vm->setNode(true);
+                _left_cpu_A -= vm->getNumOfCpu();
+                _left_mem_A -= vm->getSizeOfMem();
+                success = true;
+            }
+            else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
+            {
+                vm->setNode(false);
+                _left_cpu_B -= vm->getNumOfCpu();
+                _left_mem_B -= vm->getSizeOfMem();
+                success = true;
+            }
+        }
+    }
+    if (success)
+        _vms[vm->getId()] = vm;
+    return success;
+}
+
 int Host::getAvailableCpu(bool isDouble){
     if(isDouble)    return min(_left_cpu_A, _left_cpu_B);
     else return max(_left_cpu_A, _left_cpu_B);
@@ -115,16 +160,21 @@ bool Host::isFree(){
     return false;
 }
 
-void Host::print() 
+void Host::print() const
 {
     cout << "left cpu :" << _left_cpu_A << '\t' << _left_cpu_B << endl;
     cout << "left mem :" << _left_mem_A << '\t' << _left_mem_B << endl;
 }
-void Host::checkMyself() 
+void Host::checkMyself() const
 {
     int cpuA = 0, cpuB = 0, memA = 0, memB = 0; 
     for (auto &i : _vms)
     {
+        if (i.second->getHost().get()!= this)
+        {
+            cout << "vm host not match" << endl;
+        }
+        
         int cpu = i.second->getNumOfCpu(), mem = i.second->getSizeOfMem();
         if (i.second->IsDoubleNode() == 0)
         {
@@ -158,3 +208,4 @@ void Host::checkMyself()
         cout << "sum: " << m_num_of_cpu << '\t' << m_size_of_mem << endl;
     }
 }
+

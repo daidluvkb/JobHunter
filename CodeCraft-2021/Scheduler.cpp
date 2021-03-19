@@ -2,7 +2,8 @@
 
 Scheduler::Scheduler(/* args */)
 {
-   
+   cost = 0;
+   _today_add_arrangement_num = 0;
 }
 
 Scheduler::~Scheduler()
@@ -51,6 +52,7 @@ void Scheduler::addVM(vector<shared_ptr<VirtualMachine>> &vms)
             _today_add_arrangement << "(" << vms[i]->getHost()->getIndex() << ")\n";
         else
             _today_add_arrangement << "(" << vms[i]->getHost()->getIndex() << ", " << vms[i]->getNode() << ")\n";
+        _today_add_arrangement_num ++;
     }    
 }
 
@@ -120,21 +122,46 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
             host = chooseAHost(vm->getNumOfCpu() * 2, vm->getSizeOfMem() * 2);
         }
 
-        if (host){
-            _buyAHost(*host);            
+        if (host)
+        {
+            _buyAHost_opt(*host);
             //record buying action
-            }
+        }
         else
         {
             buyHosts(vm->getNumOfCpu(), vm->getSizeOfMem());//host column must be bigger than vm require
         }
     }
 
-    auto host = _free_host[_free_host.size() - 1];
-    _busy_host.emplace_back(host);
-    host->addVM(vm);
-    vm->setHost(host);
-    _free_host.pop_back();
+    //auto host = _free_host[_free_host.size() - 1];//
+    for (auto i = _free_host.begin(); i != _free_host.end(); i++)
+    {
+        if ((*i)->addVM_try(vm))
+        {
+            _busy_host.emplace_back(*i);
+            vm->setHost(*i);
+            _free_host.erase(i);
+            return;
+        }
+        
+    }
+    shared_ptr<const HostInfo> host;
+    if (is_double)
+        host = chooseAHost(vm->getNumOfCpu(), vm->getSizeOfMem());
+    else
+    {
+        host = chooseAHost(vm->getNumOfCpu() * 2, vm->getSizeOfMem() * 2);
+    }
+    if (host)
+    {
+        auto hst = _buyAHost_immedidate(*host);
+        hst->addVM_try(vm);
+        vm->setHost(hst);
+    } //不太安全但好像逻辑安全
+
+    // host->addVM(vm);
+    // vm->setHost(host);
+    // _free_host.pop_back();
     return;
 }
 
@@ -169,22 +196,24 @@ void Scheduler::buyHosts(const int cpu, const int mem)
 
 void Scheduler::declareANewDay() 
 {
-    for (size_t i = 0; i < _hosts.size(); i++)
-    {
-        _hosts[i]->checkMyself();
-    }
-    
+    // for (size_t i = 0; i < _hosts.size(); i++)
+    // {
+    //     _hosts[i]->checkMyself();
+    // }
+    getTodayDailyCost();
     _today_purchased_hosts.clear();
     // _today_add_arrangement.clear();
     _today_add_arrangement.str("");
+    _today_add_arrangement_num = 0;
     // cout << "today arrange: " << _today_add_arrangement.str();
     // fflush(stdout);
 }
 
-void Scheduler::getTodayAddVMArrangment()
+int Scheduler::getTodayAddVMArrangment()
 {
     printf("%s", _today_add_arrangement.str().c_str());
     fflush(stdout);
+    return _today_add_arrangement_num;
 }
 
 vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts() 
@@ -226,6 +255,15 @@ shared_ptr<const HostInfo> Scheduler::chooseAHost(const int cpu, const int mem)
     return nullptr;
 }
 
+unsigned long long Scheduler::getCost() 
+{
+    for (size_t i = 0; i < _hosts.size(); i++)
+    {
+        cost += _hosts[i]->getCostBase();
+    }    
+    return cost;
+}
+
 void Scheduler::sumRequest(int &cpu, int &mem, const vector<shared_ptr<VirtualMachine>> &request) 
 {
     cpu = 0;
@@ -243,6 +281,8 @@ void Scheduler::_buyAHost(const HostInfo &host)
     // dcout << "debug host  " << _hosts.size()<< endl;
     // exit(0);
     _hosts.emplace_back(newhost);
+    
+    
     _free_host.emplace_back(newhost);
     auto r = _today_purchased_hosts.find(host.type);
     if (r == _today_purchased_hosts.end())
@@ -253,4 +293,64 @@ void Scheduler::_buyAHost(const HostInfo &host)
     {
         r->second += 1;
     }
+}
+
+shared_ptr<Host> Scheduler::_buyAHost_immedidate(const HostInfo& host) 
+{
+
+    shared_ptr<Host> newhost = make_shared<Host>(host, _hosts.size());
+    // dcout << "debug host  " << _hosts.size()<< endl;
+    // exit(0);
+    _hosts.emplace_back(newhost);   
+    
+    // _free_host.emplace_back(newhost);
+    auto r = _today_purchased_hosts.find(host.type);
+    if (r == _today_purchased_hosts.end())
+    {
+        _today_purchased_hosts.insert(make_pair(host.type, 1));
+    }
+    else
+    {
+        r->second += 1;
+    }
+    return newhost;
+}
+void Scheduler::_buyAHost_opt(const HostInfo &host)
+{
+    shared_ptr<Host> newhost = make_shared<Host>(host, _hosts.size());
+    // dcout << "debug host  " << _hosts.size()<< endl;
+    // exit(0);
+    _hosts.emplace_back(newhost);
+    auto i = _free_host.begin();
+    for (; i != _free_host.end(); i++)
+    {
+        if ((*i)->getCostPerDay() >= host.dailyCost)
+        {
+            _free_host.insert(i, newhost);
+            break;
+        }
+    }
+    if (i == _free_host.end())
+    {
+        _free_host.emplace_back(newhost);
+    }
+
+    auto r = _today_purchased_hosts.find(host.type);
+    if (r == _today_purchased_hosts.end())
+    {
+        _today_purchased_hosts.insert(make_pair(host.type, 1));
+    }
+    else
+    {
+        r->second += 1;
+    }
+}
+
+int Scheduler::getTodayDailyCost() 
+{
+    for (size_t i = 0; i < _busy_host.size(); i++)
+    {
+        cost+=_busy_host[i]->getCostPerDay();
+    }
+    return 0;
 }
