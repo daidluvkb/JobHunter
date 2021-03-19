@@ -73,3 +73,13 @@ void VirtualMachine::setHost(shared_ptr<Host> &host)
 {
     _host = host;
 }
+
+void VirtualMachine::checkMyself() 
+{
+    if (m_is_double_node==-1)
+    {
+        cout << "vm dont have host" << endl;        
+    }
+    
+    
+}

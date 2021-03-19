@@ -79,15 +79,16 @@ void addNewVM(string & s, vector<shared_ptr<VirtualMachine>> & oneDayVM){
     #include <unistd.h>
 void readFile(const string &testName, Scheduler &scheduler)
 {
-    char cwd[50];
-    getcwd(cwd, 50);
-    string filename(cwd);
-    filename.append("/");
-    filename.append(testName);
+    // char cwd[50];
+    // getcwd(cwd, 50);
+    // string filename(cwd);
+    // filename.append("/");
+    // filename.append(testName);
 
-    ifstream infile(filename, ios::in);
-    assert(infile.is_open());
-    // auto &infile = cin;
+    // ifstream infile(filename, ios::in);
+    // assert(infile.is_open());
+
+    auto &infile = cin;
     string s; //This variable stores the strings parsed every line
     getline(infile, s);
     fflush(stdin);
@@ -143,10 +144,13 @@ void readFile(const string &testName, Scheduler &scheduler)
         scheduler.declareANewDay();
         scheduler.deleteVM(oneDayDelVM);
         scheduler.addVM(oneDayAddVM);
-        // cout << i << endl;
-        auto today_purchased_result = scheduler.getNewPurchasedHosts();
-        scheduler.getTodayMigration();
-        scheduler.getTodayAddVMArrangment();
+        if (i % 100 == 0)
+        {
+            // cout << i << endl;
+            auto today_purchased_result = scheduler.getNewPurchasedHosts();
+            scheduler.getTodayMigration();
+            // scheduler.getTodayAddVMArrangment();
+        }
         // exit(0);
     }
 }
@@ -158,7 +162,7 @@ int main()
     clock_t start, end;
     //定义clock_t变量
     start = clock();
-    string testDataName = "../training-data/training-1.txt";
+    string testDataName = "../training-data/training-2.txt";
     //dcout << "Begin to schdule!" << endl;
     //    ifstream infile(testDataName, ios::in);
     // return 0;

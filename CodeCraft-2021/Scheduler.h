@@ -39,13 +39,25 @@ public:
     void setHostCandidates(unordered_map<string, HostInfo> &hostInfos);
     void deleteVM(vector<int> &ptr);
     void addVM(vector<shared_ptr<VirtualMachine>> &ptr);
+   
     void shutHost(shared_ptr<Host> &host);
     void buyHosts(int cpu, int mem);
-    shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
     void declareANewDay();
     void getTodayAddVMArrangment();
     vector<shared_ptr<const HostInfo>> getNewPurchasedHosts(); // get purchased hosts every day
+
+    shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
+
+    /**
+    *migration oprations
+    */
+private:
+    void migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targethost);
+    shared_ptr<Host> chooseAHostToFree();
+
+public:
     void getTodayMigration();
+    bool freeHost(shared_ptr<Host>& host);
 };
 
 #endif

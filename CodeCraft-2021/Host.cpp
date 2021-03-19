@@ -120,3 +120,41 @@ void Host::print()
     cout << "left cpu :" << _left_cpu_A << '\t' << _left_cpu_B << endl;
     cout << "left mem :" << _left_mem_A << '\t' << _left_mem_B << endl;
 }
+void Host::checkMyself() 
+{
+    int cpuA = 0, cpuB = 0, memA = 0, memB = 0; 
+    for (auto &i : _vms)
+    {
+        int cpu = i.second->getNumOfCpu(), mem = i.second->getSizeOfMem();
+        if (i.second->IsDoubleNode() == 0)
+        {
+            cpuA += cpu / 2;
+            cpuB += cpu / 2;
+            memA += mem / 2;
+            memB += mem / 2;
+        }
+        else if(i.second->IsDoubleNode() == 1)
+        {
+            cpuA += cpu;
+            memA += mem;
+        }
+        else if (i.second->IsDoubleNode() == 2)
+        {
+            cpuB += cpu;
+            memB += mem;
+        }else
+        {
+            cout << "vm wrong" << endl;
+        }        
+    }
+    if (cpuA + _left_cpu_A != m_num_of_cpu / 2 ||
+        cpuB + _left_cpu_B != m_num_of_cpu / 2 ||
+        memB + _left_mem_B != m_size_of_mem / 2 ||
+        memA + _left_mem_A != m_size_of_mem / 2)
+    {
+        cout << "used cpu: " << cpuA << '\t' << cpuB << endl;
+        cout << "used mem: " << memA << '\t' << memB << endl;
+        print();
+        cout << "sum: " << m_num_of_cpu << '\t' << m_size_of_mem << endl;
+    }
+}

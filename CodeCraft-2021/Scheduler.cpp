@@ -169,6 +169,11 @@ void Scheduler::buyHosts(const int cpu, const int mem)
 
 void Scheduler::declareANewDay() 
 {
+    for (size_t i = 0; i < _hosts.size(); i++)
+    {
+        _hosts[i]->checkMyself();
+    }
+    
     _today_purchased_hosts.clear();
     // _today_add_arrangement.clear();
     _today_add_arrangement.str("");

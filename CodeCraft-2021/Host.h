@@ -22,6 +22,7 @@ class Host{
         int _left_mem_A;
         int _left_mem_B;
     public:
+        void checkMyself();
         Host(const string &type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday, int index);
         Host(const HostInfo &hostinfo, const int index);
         int getNumOfCpu();
