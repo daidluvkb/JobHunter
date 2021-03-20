@@ -149,7 +149,7 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
     return success;
 }
 
-bool addVM_opt(shared_ptr<VirtualMachine>& vm, char& Node){
+bool Host::addVM_opt(shared_ptr<VirtualMachine>& vm, char& Node){
     if(Node == 'D'){
         _left_cpu_A -= (vm->getNumOfCpu() / 2);
         _left_cpu_B -= (vm->getNumOfCpu() / 2);

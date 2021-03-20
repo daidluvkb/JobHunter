@@ -87,8 +87,8 @@ void Scheduler::deleteVM(const int id)
 void Scheduler::addVM_opt(shared_ptr<VirtualMachine>& vm){
     bool is_double = !vm->IsDoubleNode();
     double vm_mem_to_cpu = vm->getSizeOfMem() / vm->getNumOfCpu();
-    double min_Host_mem_to_cpu = DBL_max;
-    int index = i;
+    double min_Host_mem_to_cpu = DBL_MAX;
+    int index = 0;
     char Node = 'D';
     for (size_t i = 0; i < _busy_host.size(); i++)
     {
@@ -116,7 +116,7 @@ void Scheduler::addVM_opt(shared_ptr<VirtualMachine>& vm){
                 }
             }
             if(_busy_host[i]->getAvailableCpuB() > vm->getNumOfCpu() &&
-               _busy_host[i]->getAvailableMemB() > vm->getSizeOfCpu()){
+               _busy_host[i]->getAvailableMemB() > vm->getSizeOfMem()){
                     if(abs((_busy_host[i]->getAvailableMemB() / _busy_host[i]->getAvailableCpuB()) - vm_mem_to_cpu)
                      < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
                         min_Host_mem_to_cpu = _busy_host[i]->getAvailableMemB() / _busy_host[i]->getAvailableCpuB();
@@ -127,12 +127,67 @@ void Scheduler::addVM_opt(shared_ptr<VirtualMachine>& vm){
                }
 
         }
-        if(min_Host_mem_to_cpu != DBL_max){
+        if(min_Host_mem_to_cpu != DBL_MAX){
             _busy_host[index]->addVM_opt(vm, Node);
             vm->setHost(_busy_host[index]);
         }
-        else addVM(vm);
     }
+    if (!_free_host.size()) //
+    {
+        shared_ptr<const HostInfo> host;
+        if(is_double)
+            host = chooseAHost(vm->getNumOfCpu(), vm->getSizeOfMem());
+        else
+        {
+            host = chooseAHost(vm->getNumOfCpu() * 2, vm->getSizeOfMem() * 2);
+        }
+
+        if (host)
+        {
+            _buyAHost_opt(*host);
+            //record buying action
+        }
+        else
+        {
+            buyHosts(vm->getNumOfCpu(), vm->getSizeOfMem());//host column must be bigger than vm require
+        }
+    }
+
+    //auto host = _free_host[_free_host.size() - 1];//
+    for (auto i = _free_host.begin(); i != _free_host.end(); i++)
+    {
+        if ((*i)->addVM_try(vm))
+        {
+            _busy_host.emplace_back(*i);
+            vm->setHost(*i);
+            _free_host.erase(i);
+            return;
+        }
+        
+    }
+    shared_ptr<const HostInfo> host;
+    if (is_double)
+        host = chooseAHost(vm->getNumOfCpu(), vm->getSizeOfMem());
+    else
+    {
+        host = chooseAHost(vm->getNumOfCpu() * 2, vm->getSizeOfMem() * 2);
+    }
+    if (host)
+    {
+        auto hst = _buyAHost_immedidate(*host);
+        if (hst->addVM_try(vm))
+            vm->setHost(hst);
+        else
+        {
+            cout << "host cant contain vm??\n";
+        }
+
+    } //不太安全但好像逻辑安全
+
+    // host->addVM(vm);
+    // vm->setHost(host);
+    // _free_host.pop_back();
+    return;    
 
 }
 

@@ -30,6 +30,7 @@ private:
     /* method */
     void deleteVM(const int id);
     void addVM(shared_ptr<VirtualMachine>& vm);
+    void addVM_opt(shared_ptr<VirtualMachine>& vm);
     void sumRequest(int &cpu, int &mem, const vector<shared_ptr<VirtualMachine>> &request);
 
 private:
@@ -45,6 +46,7 @@ public:
     void setHostCandidates(unordered_map<string, HostInfo> &hostInfos);
     void deleteVM(vector<int> &ptr);
     void addVM(vector<shared_ptr<VirtualMachine>> &ptr);
+    void addVM_opt(vector<shared_ptr<VirtualMachine>> &vms);
    
     void shutHost(shared_ptr<Host> &host);
     void buyHosts(int cpu, int mem);
