@@ -145,6 +145,30 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
     return success;
 }
 
+bool addVM_opt(shared_ptr<VirtualMachine>& vm, char& Node){
+    if(Node == 'D'){
+        _left_cpu_A -= (vm->getNumOfCpu() / 2);
+        _left_cpu_B -= (vm->getNumOfCpu() / 2);
+        _left_mem_A -= (vm->getSizeOfMem() / 2);
+        _left_mem_B -= (vm->getSizeOfMem() / 2);
+        _vms[vm->getId()] = vm;
+        return true;
+    }
+    else if(Node == 'A'){
+        _left_cpu_A -= vm->getNumOfCpu();
+        _left_mem_A -= vm->getSizeOfMem();
+        _vms[vm->getId()] = vm;
+        return true;
+    }
+    else if(Node == 'B'){
+        _left_cpu_B -= vm->getNumOfCpu();
+        _left_cpu_B -= vm->getSizeOfMem();
+        _vms[vm->getId()] = vm;
+        return true;
+    }
+    return false;
+}
+
 int Host::getAvailableCpu(bool isDouble){
     if(isDouble)    return min(_left_cpu_A, _left_cpu_B);
     else return max(_left_cpu_A, _left_cpu_B);
@@ -153,6 +177,19 @@ int Host::getAvailableCpu(bool isDouble){
 int Host::getAvailableMem(bool isDouble){
     if(isDouble)    return min(_left_mem_A, _left_mem_B);
     else    return max(_left_mem_A, _left_mem_B);
+}
+
+int Host::getAvailableCpuA(){
+    return _left_cpu_A;
+}
+int Host::getAvailableCpuB(){
+    return _left_cpu_B;
+}
+int Host::getAvailableMemA(){
+    return _left_mem_A;
+}
+int Host::getAvailableMemB(){
+    return _left_mem_B;
 }
 
 bool Host::isFree(){

@@ -34,9 +34,14 @@ class Host{
         int getIndex();
         bool addVM(shared_ptr<VirtualMachine>& vm);
         bool addVM_try(shared_ptr<VirtualMachine>& vm);
+        bool addVM_opt(shared_ptr<VirtualMachine>& vm, char& Node);
         //void addVM(int id, bool left); // A or B 
         int getAvailableCpu(bool isDouble);
         int getAvailableMem(bool isDouble);
+        int getAvailableCpuA();
+        int getAvailableCpuB();
+        int getAvailableMemA();
+        int getAvailableMemB();
         bool isFree();
 
     private:

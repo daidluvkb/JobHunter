@@ -1,4 +1,6 @@
 #include "Scheduler.h"
+#include <float.h>
+#include <cmath>
 
 Scheduler::Scheduler(/* args */)
 {
@@ -41,6 +43,20 @@ void Scheduler::deleteVM(vector<int> &vms)
         deleteVM(vms[i]);
 }
 
+void Scheduler::addVM_opt(vector<shared_ptr<VirtualMachine>> &vms){
+    for (size_t i = 0; i < vms.size(); i++)
+    {
+        int id = vms[i]->getId();
+        _vms.insert(make_pair(id, vms[i]));
+        addVM_opt(vms[i]);
+        if (!vms[i]->IsDoubleNode())
+            _today_add_arrangement << "(" << vms[i]->getHost()->getIndex() << ")\n";
+        else
+            _today_add_arrangement << "(" << vms[i]->getHost()->getIndex() << ", " << vms[i]->getNode() << ")\n";
+        _today_add_arrangement_num ++;
+    }    
+}
+
 void Scheduler::addVM(vector<shared_ptr<VirtualMachine>> &vms) 
 {
     for (size_t i = 0; i < vms.size(); i++)
@@ -66,6 +82,58 @@ void Scheduler::deleteVM(const int id)
         _vms.erase(itr);
         return;
     }
+}
+
+void Scheduler::addVM_opt(shared_ptr<VirtualMachine>& vm){
+    bool is_double = !vm->IsDoubleNode();
+    double vm_mem_to_cpu = vm->getSizeOfMem() / vm->getNumOfCpu();
+    double min_Host_mem_to_cpu = DBL_max;
+    int index = i;
+    char Node = 'D';
+    for (size_t i = 0; i < _busy_host.size(); i++)
+    {
+        if (is_double)
+        {
+            if (_busy_host[i]->getAvailableCpu(true) >= (vm->getNumOfCpu() / 2) &&
+                _busy_host[i]->getAvailableMem(true) >= (vm->getSizeOfMem() / 2))
+            {
+                if(abs((_busy_host[i]->getAvailableMem(true) / _busy_host[i]->getAvailableCpu(true)) - vm_mem_to_cpu)
+                 < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
+                    min_Host_mem_to_cpu = _busy_host[i]->getAvailableMem(true) / _busy_host[i]->getAvailableCpu(true);
+                    index = i;
+                }
+            }
+        }
+        else
+        {
+            if (_busy_host[i]->getAvailableCpuA() >= vm->getNumOfCpu() &&
+                _busy_host[i]->getAvailableMemA() >= vm->getSizeOfMem()){
+                    if(abs((_busy_host[i]->getAvailableMemA() / _busy_host[i]->getAvailableCpuA()) - vm_mem_to_cpu)
+                     < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
+                        min_Host_mem_to_cpu = _busy_host[i]->getAvailableMemA() / _busy_host[i]->getAvailableCpuA();
+                        index = i;
+                        Node = 'A';
+                }
+            }
+            if(_busy_host[i]->getAvailableCpuB() > vm->getNumOfCpu() &&
+               _busy_host[i]->getAvailableMemB() > vm->getSizeOfCpu()){
+                    if(abs((_busy_host[i]->getAvailableMemB() / _busy_host[i]->getAvailableCpuB()) - vm_mem_to_cpu)
+                     < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
+                        min_Host_mem_to_cpu = _busy_host[i]->getAvailableMemB() / _busy_host[i]->getAvailableCpuB();
+                        index = i;
+                        Node = 'B';
+
+                   }
+               }
+
+        }
+        if(min_Host_mem_to_cpu != DBL_max){
+            _busy_host[index]->addVM_opt(vm, Node);
+            vm->setHost(_busy_host[index]);
+        }
+        else addVM(vm);
+    }
+
 }
 
 void Scheduler::addVM(shared_ptr<VirtualMachine>& vm) 
