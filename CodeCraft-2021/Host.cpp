@@ -107,8 +107,8 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
     {
         // cout << "vm: " << vm->getNumOfCpu() << '\t' << vm->getSizeOfMem()<< endl;
         // print();
-        if (getAvailableCpu(true) > (vm->getNumOfCpu() / 2) &&
-            getAvailableMem(true) > (vm->getSizeOfMem() / 2))
+        if (getAvailableCpu(true) >= (vm->getNumOfCpu() / 2) &&
+            getAvailableMem(true) >= (vm->getSizeOfMem() / 2))
         {
             /* code */
             _left_cpu_A -= (vm->getNumOfCpu() / 2);
@@ -121,14 +121,16 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
     }
     else
     {
-        if (getAvailableCpu(false) > vm->getNumOfCpu() &&
-            getAvailableMem(false) > vm->getSizeOfMem())
+        if (getAvailableCpu(false) >= vm->getNumOfCpu() &&
+            getAvailableMem(false) >= vm->getSizeOfMem())
         {
             if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
             {
                 vm->setNode(true);
                 _left_cpu_A -= vm->getNumOfCpu();
                 _left_mem_A -= vm->getSizeOfMem();
+                if (_left_cpu_A < 0 || _left_mem_A < 0)
+                    cout << "overflow\n";
                 success = true;
             }
             else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
@@ -136,6 +138,8 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
                 vm->setNode(false);
                 _left_cpu_B -= vm->getNumOfCpu();
                 _left_mem_B -= vm->getSizeOfMem();
+                if (_left_cpu_B < 0 || _left_mem_B < 0)
+                    cout << "overflow\n";
                 success = true;
             }
         }

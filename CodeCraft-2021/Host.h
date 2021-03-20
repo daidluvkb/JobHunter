@@ -38,6 +38,7 @@ class Host{
         int getAvailableCpu(bool isDouble);
         int getAvailableMem(bool isDouble);
         bool isFree();
+        int getNumOfVM() const { return _vms.size(); }
 
     private:
         void print() const;

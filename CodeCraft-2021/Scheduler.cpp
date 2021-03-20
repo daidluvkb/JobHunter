@@ -90,26 +90,32 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
 
     for (size_t i = 0; i < _busy_host.size(); i++)
     {
-        if (is_double)
-        {
-            if (_busy_host[i]->getAvailableCpu(true) > (vm->getNumOfCpu() / 2) &&
-                _busy_host[i]->getAvailableMem(true) > (vm->getSizeOfMem() / 2))
-            {
-                _busy_host[i]->addVM(vm);
-                vm->setHost(_busy_host[i]);
-                return;
-            }
+        if (_busy_host[i]->addVM_try(vm))
+        {            
+            vm->setHost(_busy_host[i]);
+            return ;
         }
-        else
-        {
-            if (_busy_host[i]->getAvailableCpu(false) > vm->getNumOfCpu() &&
-                _busy_host[i]->getAvailableMem(false) > vm->getSizeOfMem())
-                if (_busy_host[i]->addVM(vm))
-                {
-                    vm->setHost(_busy_host[i]);
-                    return;
-                }
-        }
+        
+        // if (is_double)
+        // {
+        //     if (_busy_host[i]->getAvailableCpu(true) >= (vm->getNumOfCpu() / 2) &&
+        //         _busy_host[i]->getAvailableMem(true) >= (vm->getSizeOfMem() / 2))
+        //     {
+        //         _busy_host[i]->addVM(vm);
+        //         vm->setHost(_busy_host[i]);
+        //         return;
+        //     }
+        // }
+        // else
+        // {
+        //     if (_busy_host[i]->getAvailableCpu(false) >= vm->getNumOfCpu() &&
+        //         _busy_host[i]->getAvailableMem(false) >= vm->getSizeOfMem())
+        //         if (_busy_host[i]->addVM(vm))
+        //         {
+        //             vm->setHost(_busy_host[i]);
+        //             return;
+        //         }
+        // }
     }
 
     if (!_free_host.size()) //
@@ -155,8 +161,13 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
     if (host)
     {
         auto hst = _buyAHost_immedidate(*host);
-        hst->addVM_try(vm);
-        vm->setHost(hst);
+        if (hst->addVM_try(vm))
+            vm->setHost(hst);
+        else
+        {
+            cout << "host cant contain vm??\n";
+        }
+
     } //不太安全但好像逻辑安全
 
     // host->addVM(vm);
@@ -196,10 +207,21 @@ void Scheduler::buyHosts(const int cpu, const int mem)
 
 void Scheduler::declareANewDay() 
 {
-    // for (size_t i = 0; i < _hosts.size(); i++)
-    // {
-    //     _hosts[i]->checkMyself();
-    // }
+    int vmsnum = 0;
+    for (size_t i = 0; i < _hosts.size(); i++)
+    {
+        _hosts[i]->checkMyself();
+        vmsnum += _hosts[i]->getNumOfVM();
+        if (_hosts[i]->getIndex() != i)
+        {
+            cout << "host index wrong\n";
+        }        
+    }
+    if (vmsnum != _vms.size())
+    {
+        cout << "vm num wrong\n";
+    }
+    
     getTodayDailyCost();
     _today_purchased_hosts.clear();
     // _today_add_arrangement.clear();
@@ -262,6 +284,24 @@ unsigned long long Scheduler::getCost()
         cost += _hosts[i]->getCostBase();
     }    
     return cost;
+}
+
+void Scheduler::checkVMS() 
+{
+    for (size_t i = 0; i < _vms.size(); i++)
+    {
+        // if (!_vms[i]->getHost())
+        // {
+        //     cout << "vm dont have host"<< endl;
+        // }
+        
+        // if (_vms[i]->getHost()->getIndex() >= _hosts.size() || _vms[i]->getHost()->getIndex() < 0)
+        // {
+        //     cout << "wrong vm host  id"<< endl;
+        // }
+        
+    }
+    
 }
 
 void Scheduler::sumRequest(int &cpu, int &mem, const vector<shared_ptr<VirtualMachine>> &request) 
