@@ -76,19 +76,19 @@ void addNewVM(string & s, vector<shared_ptr<VirtualMachine>> & oneDayVM){
 }
 
 
-    #include <unistd.h>
+#include <unistd.h>
 void readFile(const string &testName, Scheduler &scheduler)
 {
-    // char cwd[50];
-    // getcwd(cwd, 50);
-    // string filename(cwd);
-    // filename.append("/");
-    // filename.append(testName);
+    char cwd[50];
+    getcwd(cwd, 50);
+    string filename(cwd);
+    filename.append("/");
+    filename.append(testName);
+    cout << filename << endl;
+    ifstream infile(filename, ios::in);
+    assert(infile.is_open());
 
-    // ifstream infile(filename, ios::in);
-    // assert(infile.is_open());
-
-    auto &infile = cin;
+    // auto &infile = cin;
     string s; //This variable stores the strings parsed every line
     getline(infile, s);
     fflush(stdin);
@@ -147,12 +147,13 @@ void readFile(const string &testName, Scheduler &scheduler)
         // if (i % 100 == 0)
         // {
         //     // cout << i << endl;
-        auto today_purchased_result = scheduler.getNewPurchasedHosts();
-        scheduler.getTodayMigration();
-        scheduler.getTodayAddVMArrangment();
+        // auto today_purchased_result = scheduler.getNewPurchasedHosts();
+        // scheduler.getTodayMigration();
+        // scheduler.getTodayAddVMArrangment();
         // }
         // exit(0);
     }
+    // scheduler.checkVMS();
 }
 
 int main()

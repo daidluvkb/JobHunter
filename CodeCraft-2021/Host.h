@@ -43,6 +43,7 @@ class Host{
         int getAvailableMemA();
         int getAvailableMemB();
         bool isFree();
+        int getNumOfVM() const { return _vms.size(); }
 
     private:
         void print() const;

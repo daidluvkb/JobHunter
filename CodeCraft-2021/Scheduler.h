@@ -54,6 +54,7 @@ public:
 
     shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
     unsigned long long getCost();
+    void checkVMS();
 
     /**
     *migration oprations
