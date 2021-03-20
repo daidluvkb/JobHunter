@@ -63,7 +63,7 @@ void makeNewVM(string & s){
     vmInfos.insert(make_pair(id, vmInfo));
 }
 
-void addNewVM(string & s, vector<shared_ptr<VirtualMachine>> & oneDayVM){
+shared_ptr<VirtualMachine> addNewVM(string & s, vector<shared_ptr<VirtualMachine>> & oneDayVM){
     int id_h = s.find(' ');
     int id_t = s.find(',', id_h);
     string id = s.substr(id_h + 1, id_t - id_h - 1);
@@ -73,22 +73,23 @@ void addNewVM(string & s, vector<shared_ptr<VirtualMachine>> & oneDayVM){
     VMInfo itr = vmInfos.find(id)->second;
     shared_ptr<VirtualMachine> ptr(make_shared<VirtualMachine>(id, itr.cpu, itr.mem, itr.isDouble, index));
     oneDayVM.push_back(ptr);
+    return ptr;
 }
 
 
 #include <unistd.h>
 void readFile(const string &testName, Scheduler &scheduler)
 {
-    char cwd[50];
-    getcwd(cwd, 50);
-    string filename(cwd);
-    filename.append("/");
-    filename.append(testName);
-    cout << filename << endl;
-    ifstream infile(filename, ios::in);
-    assert(infile.is_open());
+    // char cwd[50];
+    // getcwd(cwd, 50);
+    // string filename(cwd);
+    // filename.append("/");
+    // filename.append(testName);
+    // cout << filename << endl;
+    // ifstream infile(filename, ios::in);
+    // assert(infile.is_open());
 
-    // auto &infile = cin;
+    auto &infile = cin;
     string s; //This variable stores the strings parsed every line
     getline(infile, s);
     fflush(stdin);
@@ -118,6 +119,7 @@ void readFile(const string &testName, Scheduler &scheduler)
 
     for (int i = 0; i < days; i++)
     {
+        scheduler.declareANewDay();
         getline(infile, s);
         fflush(stdin);
         int reqNum = stoi(s);
@@ -129,7 +131,8 @@ void readFile(const string &testName, Scheduler &scheduler)
             fflush(stdin);
             if (s.substr(0, 4) == "(add")
             {
-                addNewVM(s, oneDayAddVM);
+                auto newvm = addNewVM(s, oneDayAddVM);
+                scheduler.addVM_bystep(newvm);    
             }
             else if (s.substr(0, 4) == "(del")
             {
@@ -138,18 +141,18 @@ void readFile(const string &testName, Scheduler &scheduler)
                 int id_t = s.find(',', id_h);
                 int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
                 oneDayDelVM.push_back(index);
+                scheduler.deleteVM(index);
             }
         }
 
-        scheduler.declareANewDay();
-        scheduler.deleteVM(oneDayDelVM);
-        scheduler.addVM(oneDayAddVM);
+        // scheduler.deleteVM(oneDayDelVM);
+        // scheduler.addVM(oneDayAddVM);
         // if (i % 100 == 0)
         // {
         //     // cout << i << endl;
-        // auto today_purchased_result = scheduler.getNewPurchasedHosts();
-        // scheduler.getTodayMigration();
-        // scheduler.getTodayAddVMArrangment();
+        auto today_purchased_result = scheduler.getNewPurchasedHosts();
+        scheduler.getTodayMigration();
+        scheduler.getTodayAddVMArrangment(oneDayAddVM);
         // }
         // exit(0);
     }

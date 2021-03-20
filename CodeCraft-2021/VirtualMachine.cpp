@@ -64,7 +64,7 @@ char VirtualMachine::getNode()
     return 'D'; 
 }
 
-shared_ptr<Host> &VirtualMachine::getHost()
+shared_ptr<Host> VirtualMachine::getHost()
 {
     return _host;
 }

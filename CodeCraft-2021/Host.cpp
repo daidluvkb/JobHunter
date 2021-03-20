@@ -121,27 +121,78 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
     }
     else
     {
-        if (getAvailableCpu(false) >= vm->getNumOfCpu() &&
-            getAvailableMem(false) >= vm->getSizeOfMem())
+        // if (getAvailableCpu(false) >= vm->getNumOfCpu() &&
+        //     getAvailableMem(false) >= vm->getSizeOfMem())
+        // {
+        //     if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
+        //     {
+        //         vm->setNode(true);
+        //         _left_cpu_A -= vm->getNumOfCpu();
+        //         _left_mem_A -= vm->getSizeOfMem();
+        //         if (_left_cpu_A < 0 || _left_mem_A < 0)
+        //             cout << "overflow\n";
+        //         success = true;
+        //     }
+
+        //     else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
+        //     {
+        //         vm->setNode(false);
+        //         _left_cpu_B -= vm->getNumOfCpu();
+        //         _left_mem_B -= vm->getSizeOfMem();
+        //         if (_left_cpu_B < 0 || _left_mem_B < 0)
+        //             cout << "overflow\n";
+        //         success = true;
+        //     }
+        //     else 
+        //     {
+        //         // cout << "else" << endl;
+        //     }
+        // }
+        int mem = vm->getSizeOfMem(), cpu = vm->getNumOfCpu();
+        bool A = false, B = false;
+        if (_left_cpu_A >= cpu && _left_mem_A >= mem)
         {
-            if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
+            A = true;
+        }
+        if (_left_cpu_B >= cpu && _left_mem_B >= mem)
+        {
+            B = true;
+        }
+        success = true;
+        if (A && B)
+        {
+            if (_left_cpu_A >= _left_cpu_B)
             {
                 vm->setNode(true);
                 _left_cpu_A -= vm->getNumOfCpu();
                 _left_mem_A -= vm->getSizeOfMem();
-                if (_left_cpu_A < 0 || _left_mem_A < 0)
-                    cout << "overflow\n";
-                success = true;
             }
-            else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
+            else
             {
                 vm->setNode(false);
                 _left_cpu_B -= vm->getNumOfCpu();
                 _left_mem_B -= vm->getSizeOfMem();
-                if (_left_cpu_B < 0 || _left_mem_B < 0)
-                    cout << "overflow\n";
-                success = true;
             }
+        }
+        else if (!A && !B)
+        {
+            success = false;
+        }
+        else if (!A)
+        {
+            vm->setNode(false);
+            _left_cpu_B -= vm->getNumOfCpu();
+            _left_mem_B -= vm->getSizeOfMem();
+            if (_left_cpu_B < 0 || _left_mem_B < 0)
+                cout << "overflow\n";
+        }
+        else
+        {
+            vm->setNode(true);
+            _left_cpu_A -= vm->getNumOfCpu();
+            _left_mem_A -= vm->getSizeOfMem();
+            if (_left_cpu_A < 0 || _left_mem_A < 0)
+                cout << "overflow\n";
         }
     }
     if (success)
@@ -206,14 +257,16 @@ void Host::print() const
     cout << "left cpu :" << _left_cpu_A << '\t' << _left_cpu_B << endl;
     cout << "left mem :" << _left_mem_A << '\t' << _left_mem_B << endl;
 }
-void Host::checkMyself() const
+bool Host::checkMyself() const
 {
+    int right = true;
     int cpuA = 0, cpuB = 0, memA = 0, memB = 0; 
     for (auto &i : _vms)
     {
-        if (i.second->getHost().get()!= this)
+        if (i.second->getHost()->getIndex()!= m_index)
         {
             cout << "vm host not match" << endl;
+            right = false;
         }
         
         int cpu = i.second->getNumOfCpu(), mem = i.second->getSizeOfMem();
@@ -236,6 +289,7 @@ void Host::checkMyself() const
         }else
         {
             cout << "vm wrong" << endl;
+            right = false;
         }        
     }
     if (cpuA + _left_cpu_A != m_num_of_cpu / 2 ||
@@ -247,6 +301,8 @@ void Host::checkMyself() const
         cout << "used mem: " << memA << '\t' << memB << endl;
         print();
         cout << "sum: " << m_num_of_cpu << '\t' << m_size_of_mem << endl;
+        right = false;
     }
+    return right;
 }
 

@@ -28,7 +28,7 @@ public:
     
     int setNode(bool left);
     char getNode();
-    shared_ptr<Host> &getHost(); // get the host's pointer
+    shared_ptr<Host> getHost(); // get the host's pointer
     void setHost(shared_ptr<Host> &host);
     void checkMyself();
 };
