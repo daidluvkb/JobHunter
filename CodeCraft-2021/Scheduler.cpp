@@ -372,7 +372,7 @@ void Scheduler::declareANewDay()
     {
         if (!i->isFree())
         {
-            cout << "free hosts wrong\n";
+            dcout << "free hosts wrong\n";
         }        
     }
     
@@ -383,12 +383,12 @@ void Scheduler::declareANewDay()
         vmsnum += _hosts[i]->getNumOfVM();
         if (_hosts[i]->getIndex() != i)
         {
-            cout << "host index wrong\n";
+            dcout << "host index wrong\n";
         }        
     }
     if (vmsnum != _vms.size())
     {
-        cout << "vm num wrong\n";
+        dcout << "vm num wrong\n";
     }
     
     getTodayDailyCost();

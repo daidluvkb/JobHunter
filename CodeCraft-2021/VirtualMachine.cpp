@@ -1,5 +1,6 @@
 #include "VirtualMachine.h"
 #include <memory>
+#include "utils.h"
 using namespace std;
 
 VirtualMachine::VirtualMachine(string &type, int num_of_cpu, int size_of_mem, bool is_double_node, int index)
@@ -78,7 +79,7 @@ void VirtualMachine::checkMyself()
 {
     if (m_is_double_node==-1)
     {
-        cout << "vm dont have host" << endl;        
+        dcout << "vm dont have host" << endl;        
     }
     
     
