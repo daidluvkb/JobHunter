@@ -154,28 +154,6 @@ void Scheduler::addVM_opt(shared_ptr<VirtualMachine>& vm){
             vm->setHost(_busy_host[index]);
         }
     }
-    if (!_free_host.size()) //
-    {
-        shared_ptr<const HostInfo> host;
-        if(is_double)
-            host = chooseAHost(vm->getNumOfCpu(), vm->getSizeOfMem());
-        else
-        {
-            host = chooseAHost(vm->getNumOfCpu() * 2, vm->getSizeOfMem() * 2);
-        }
-
-        if (host)
-        {
-            _buyAHost_opt(*host);
-            //record buying action
-        }
-        else
-        {
-            buyHosts(vm->getNumOfCpu(), vm->getSizeOfMem());//host column must be bigger than vm require
-        }
-    }
-
-    //auto host = _free_host[_free_host.size() - 1];//
     for (auto i = _free_host.begin(); i != _free_host.end(); i++)
     {
         if ((*i)->addVM_try(vm))
@@ -198,10 +176,13 @@ void Scheduler::addVM_opt(shared_ptr<VirtualMachine>& vm){
     {
         auto hst = _buyAHost_immedidate(*host);
         if (hst->addVM_try(vm))
+        {
+            _busy_host.emplace_back(hst);
             vm->setHost(hst);
+        }
         else
         {
-            cout << "host cant contain vm??\n";
+            dcout << "host cant contain vm??\n";
         }
 
     } //不太安全但好像逻辑安全
@@ -223,9 +204,9 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
         if (_busy_host[i]->getAvailableCpu(is_double) > vm->getNumOfCpu() &&
             _busy_host[i]->getAvailableMem(is_double) > vm->getSizeOfMem())
         {
-        //     dcout << "_busy_host:" << _busy_host.size() << endl;
-        //     dcout << _busy_host[i]->getAvailableCpu(is_double) << '\t' << vm->getNumOfCpu() << endl;
-        //     dcout << _busy_host[i]->getAvailableMem(is_double) << '\t' << vm->getSizeOfMem() << endl;
+            dcout << "_busy_host:" << _busy_host.size() << endl;
+            dcout << _busy_host[i]->getAvailableCpu(is_double) << '\t' << vm->getNumOfCpu() << endl;
+            dcout << _busy_host[i]->getAvailableMem(is_double) << '\t' << vm->getSizeOfMem() << endl;
             _busy_host[i]->addVM(vm);
             vm->setHost(_busy_host[i]);
             return;
@@ -313,7 +294,7 @@ void Scheduler::addVM(shared_ptr<VirtualMachine>& vm)
         }
         else
         {
-            cout << "host cant contain vm??\n";
+            dcout << "host cant contain vm??\n";
         }
 
     } //不太安全但好像逻辑安全
@@ -328,11 +309,11 @@ void Scheduler::addVM_bystep(shared_ptr<VirtualMachine> &vm)
 {
     int id = vm->getId();
     _vms.insert(make_pair(id, vm));
-    addVM(vm);
+    addVM_opt(vm);
 
     if (!vm->getHost()->checkMyself())
     {
-        cout << "Host wrong" << endl;
+        dcout << "Host wrong" << endl;
     }
 }
 
@@ -350,7 +331,7 @@ void Scheduler::buyHosts(const int cpu, const int mem)
 {
     if(!_host_candidates.size())
     {
-        cout << "has no host candidate , please check input hostInfos" << endl;
+        dcout << "has no host candidate , please check input hostInfos" << endl;
         return;
     }
     const HostInfo &chosen_host = _host_candidates[0];

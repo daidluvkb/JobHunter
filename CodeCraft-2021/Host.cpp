@@ -184,7 +184,7 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
             _left_cpu_B -= vm->getNumOfCpu();
             _left_mem_B -= vm->getSizeOfMem();
             if (_left_cpu_B < 0 || _left_mem_B < 0)
-                cout << "overflow\n";
+                dcout << "overflow\n";
         }
         else
         {
@@ -192,7 +192,7 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
             _left_cpu_A -= vm->getNumOfCpu();
             _left_mem_A -= vm->getSizeOfMem();
             if (_left_cpu_A < 0 || _left_mem_A < 0)
-                cout << "overflow\n";
+                dcout << "overflow\n";
         }
     }
     if (success)
@@ -254,8 +254,8 @@ bool Host::isFree(){
 
 void Host::print() const
 {
-    cout << "left cpu :" << _left_cpu_A << '\t' << _left_cpu_B << endl;
-    cout << "left mem :" << _left_mem_A << '\t' << _left_mem_B << endl;
+    dcout << "left cpu :" << _left_cpu_A << '\t' << _left_cpu_B << endl;
+    dcout << "left mem :" << _left_mem_A << '\t' << _left_mem_B << endl;
 }
 bool Host::checkMyself() const
 {
@@ -265,7 +265,7 @@ bool Host::checkMyself() const
     {
         if (i.second->getHost()->getIndex()!= m_index)
         {
-            cout << "vm host not match" << endl;
+            dcout << "vm host not match" << endl;
             right = false;
         }
         
@@ -297,10 +297,10 @@ bool Host::checkMyself() const
         memB + _left_mem_B != m_size_of_mem / 2 ||
         memA + _left_mem_A != m_size_of_mem / 2)
     {
-        cout << "used cpu: " << cpuA << '\t' << cpuB << endl;
-        cout << "used mem: " << memA << '\t' << memB << endl;
+        dcout << "used cpu: " << cpuA << '\t' << cpuB << endl;
+        dcout << "used mem: " << memA << '\t' << memB << endl;
         print();
-        cout << "sum: " << m_num_of_cpu << '\t' << m_size_of_mem << endl;
+        dcout << "sum: " << m_num_of_cpu << '\t' << m_size_of_mem << endl;
         right = false;
     }
     return right;
