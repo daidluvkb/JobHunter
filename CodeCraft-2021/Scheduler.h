@@ -74,12 +74,14 @@ private:
     bool migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost);
     vector<shared_ptr<Host>> _migrate_list;
     int _migrateVMNumPerDay;
+    stringstream _todayMigrationInfo;
 public:
     void getTodayMigration();
     void freeHost(shared_ptr<Host>& host);
     int get_migrateVMNumPerDay() const;
     static bool cmp(shared_ptr<Host>&, shared_ptr<Host> &);
     void oneDayMigration();
+    void printMigrateInfo();
 };
 
 #endif

@@ -85,6 +85,7 @@ void readFile(const string &testName, Scheduler &scheduler)
     string filename(cwd);
     filename.append("/");
     filename.append(testName);
+    filename = testName;
     cout << filename << endl;
     ifstream infile(filename, ios::in);
     assert(infile.is_open());
@@ -124,7 +125,9 @@ void readFile(const string &testName, Scheduler &scheduler)
         */
         scheduler.declareANewDay();
         scheduler.oneDayMigration();
-        cout << "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
+//        cout << "****** day:" << i << endl;
+        cout <<  "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
+        scheduler.printMigrateInfo();
         getline(infile, s);
         fflush(stdin);
         int reqNum = stoi(s);
@@ -166,11 +169,11 @@ void readFile(const string &testName, Scheduler &scheduler)
 
 int main()
 {
-
     ios::sync_with_stdio(false);
     clock_t start, end;
     //定义clock_t变量
     start = clock();
+//    string testDataName = "/home/czy/MyWorkSpace/JobHunter/training-data/training-1.txt";
     string testDataName = "../training-data/training-1.txt";
     string testDataName_2 = "../training-data/training-2.txt";
     //dcout << "Begin to schdule!" << endl;
