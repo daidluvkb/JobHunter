@@ -213,12 +213,14 @@ bool Host::addVM_opt(shared_ptr<VirtualMachine>& vm, char& Node){
         _left_cpu_A -= vm->getNumOfCpu();
         _left_mem_A -= vm->getSizeOfMem();
         _vms[vm->getId()] = vm;
+        vm->setNode(true);
         return true;
     }
     else if(Node == 'B'){
         _left_cpu_B -= vm->getNumOfCpu();
         _left_cpu_B -= vm->getSizeOfMem();
         _vms[vm->getId()] = vm;
+        vm->setNode(false);
         return true;
     }
     return false;
@@ -306,3 +308,17 @@ bool Host::checkMyself() const
     return right;
 }
 
+// int Host::getLeftAfterAdd(const shared_ptr<VirtualMachine>& vm, char& Node){
+//     int vm_sum = vm->getNumOfCpu() + vm->getSizeOfMem();
+
+//     switch (Node)
+//     {
+//     case 'D':
+//         return _left_cpu_A + _left_cpu_B + _left_mem_A + _left_mem_B - vm_sum;
+//         break;
+//     case 'A':
+    
+//     default:
+//         break;
+//     }
+// }

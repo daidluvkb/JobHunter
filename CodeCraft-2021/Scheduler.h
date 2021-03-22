@@ -61,6 +61,7 @@ public:
     vector<shared_ptr<const HostInfo>> getNewPurchasedHosts(); // get purchased hosts every day
 
     shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
+    shared_ptr<const HostInfo> chooseAHost_(const int cpu, const int mem);
     unsigned long long getCost();
     void checkVMS();
 

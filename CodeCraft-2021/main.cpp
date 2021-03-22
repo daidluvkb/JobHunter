@@ -167,11 +167,14 @@ int main()
     //定义clock_t变量
     start = clock();
     string testDataName = "../training-data/training-1.txt";
+    string testDataName_2 = "../training-data/training-2.txt";
     //dcout << "Begin to schdule!" << endl;
     //    ifstream infile(testDataName, ios::in);
     // return 0;
     Scheduler scheduler;
     readFile(testDataName, scheduler);
+    Scheduler scheduler_2;
+    readFile(testDataName_2, scheduler_2);
     // readOj(scheduler);
 
     //	while(true){
@@ -180,7 +183,12 @@ int main()
     //	}
 
     end = clock();   
-    cout << "cost: " << scheduler.getCost() << endl;                                                         
+    unsigned long long  cost1 = scheduler.getCost();
+    unsigned long long  cost2 = scheduler_2.getCost();
+    cout << "cost1: " << cost1 << endl;     
+    cout << "cost2: " << cost2 << endl;
+    cout << "sum cost: " << cost1 + cost2 << endl;
+
     // cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
 
     return 0;
@@ -188,11 +196,10 @@ int main()
 int old_main()
 {
 	using namespace std;
-	string testdataname = "../../training-data/training-2.txt";
+	string testdataname = "../../training-data/training-1.txt";
 	ifstream infile(testdataname, ios::in);
     
-    assert(infile.is_open());   //若失败,则输出错误消息,并终止程序运行
-	unordered_map<string, pair<int, int>> vms;
+    assert(infile.is_open());   //若失�则输出错误消�并终止程序运�	unordered_map<string, pair<int, int>> vms;
 	unsigned long long cpu_req = 0, mem_req = 0;
 	string s;
 	int cnt = 0;

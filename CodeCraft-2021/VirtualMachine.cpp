@@ -37,12 +37,13 @@ int VirtualMachine::IsDoubleNode()
     return m_is_double_node;
 }
 
-int VirtualMachine::setNode(bool left)
+int VirtualMachine::setNode(bool isA)
 {
-    if (left)
+    if(isA)
         m_is_double_node = 1;
     else
         m_is_double_node = 2;
+
     return m_is_double_node;
 }
 

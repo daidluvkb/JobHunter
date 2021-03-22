@@ -13,7 +13,7 @@ private:
     const string m_type;
     const int m_num_of_cpu;
     const int m_size_of_mem;
-    int m_is_double_node; //双0，A1，B2，未部署单节点-1
+    int m_is_double_node; //�，A1，B2，未部署单节�1
     const int m_index;
     shared_ptr<Host> _host;
 
@@ -26,7 +26,7 @@ public:
     int IsDoubleNode();
 
     
-    int setNode(bool left);
+    int setNode(bool isA);
     char getNode();
     shared_ptr<Host> getHost(); // get the host's pointer
     void setHost(shared_ptr<Host> &host);

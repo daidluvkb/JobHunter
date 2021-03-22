@@ -46,6 +46,7 @@ class Host{
         int getAvailableMemB();
         bool isFree();
         int getNumOfVM() const { return _vms.size(); }
+        //int getLeftAfterAdd(const shared_ptr<VirtualMachine>& vm, char& Node);
 
     private:
         void print() const;
