@@ -31,7 +31,7 @@ class Host{
         int getSizeOfMem();
         int getCostBase();
         int getCostPerDay();
-
+        unordered_map<int, shared_ptr<VirtualMachine>>& get_vms();
         void deleteVM(int id);
         int getIndex();
         bool addVM(shared_ptr<VirtualMachine>& vm);

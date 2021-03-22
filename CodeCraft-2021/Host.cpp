@@ -308,9 +308,9 @@ bool Host::checkMyself() const
     return right;
 }
 
-// int Host::getLeftAfterAdd(const shared_ptr<VirtualMachine>& vm, char& Node){
-//     int vm_sum = vm->getNumOfCpu() + vm->getSizeOfMem();
-
+unordered_map<int, shared_ptr<VirtualMachine>> & Host::get_vms(){
+    return _vms;
+}
 //     switch (Node)
 //     {
 //     case 'D':

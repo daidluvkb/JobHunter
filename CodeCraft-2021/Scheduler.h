@@ -69,12 +69,17 @@ public:
     *migration oprations
     */
 private:
-    void migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targethost);
-    shared_ptr<Host> chooseAHostToFree();
-
+//    void migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost);
+    bool chooseAHostToFree(shared_ptr<Host>&);
+    bool migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost);
+    vector<shared_ptr<Host>> _migrate_list;
+    int _migrateVMNumPerDay;
 public:
     void getTodayMigration();
-    bool freeHost(shared_ptr<Host>& host);
+    void freeHost(shared_ptr<Host>& host);
+    int get_migrateVMNumPerDay() const;
+    static bool cmp(shared_ptr<Host>&, shared_ptr<Host> &);
+    void oneDayMigration();
 };
 
 #endif

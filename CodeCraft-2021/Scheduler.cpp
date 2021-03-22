@@ -366,6 +366,7 @@ void Scheduler::buyHosts(const int cpu, const int mem)
 
 void Scheduler::declareANewDay() 
 {
+    _migrateVMNumPerDay = 0;
     _host_num_lastday = _hosts.size();
     for (auto &i : _free_host)
     {
@@ -623,4 +624,99 @@ void Scheduler::recordPurchasedHost(const HostInfo& host)
     {
         r->second += 1;
     }
+}
+
+
+bool Scheduler::migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost) {
+    /*
+     * migrate the vm to the target host
+     */
+    if(targetHost->addVM_try(vm)){
+        vm->getHost()->deleteVM(vm->getId());
+        vm->setHost(targetHost);
+        targetHost->addVM(vm);
+        return true;
+    }
+    return false;
+}
+
+
+void Scheduler::freeHost(shared_ptr<Host> &host) {
+    /*
+     * free the host, delete from the busy list, add to the free list
+     */
+    if(!host->isFree()){
+        cout << "Not free yet" << endl;
+        exit(-1);
+    }
+    _free_host.emplace_back(host);
+    for(auto it = _busy_host.begin(); it != _busy_host.end(); it++){
+        if((*it)->getIndex() == host->getIndex()){
+            _busy_host.erase(it);
+        }
+    }
+}
+
+
+bool Scheduler::chooseAHostToFree(shared_ptr<Host>& leastBusyHost) {
+    /*
+     * iterate the migrate_list, choose a host to free
+     */
+//    shared_ptr<Host> leastBusyHost = _migrate_list[0];
+    for(auto it : leastBusyHost->get_vms()){
+        shared_ptr<VirtualMachine> vmToFree(it.second);
+        bool flag = false;
+        for(int i = _migrate_list.size()-1; i>=0; i--){
+            shared_ptr<Host> hostToMigrate(_migrate_list[i]);
+            if(migrateVM(vmToFree, hostToMigrate)){ // migrate success
+                _migrateVMNumPerDay ++;
+                break;
+            }
+        }
+        if(!flag){
+            break;
+        }
+    }
+    // if the host is empty, put it in the free list
+    if(leastBusyHost->isFree()){
+        _free_host.emplace_back(leastBusyHost);
+        for(auto it = _busy_host.begin(); it != _busy_host.end(); it++){
+            if((*it)->getIndex() == leastBusyHost->getIndex()){
+                _busy_host.erase(it);
+            }
+        }
+        return true;
+    }
+    return false;
+
+}
+
+
+void Scheduler::oneDayMigration() {
+    /*
+     * This method handles one day's all migration begin from the migration_list
+     * first maintain the migration list everyday
+     */
+    _migrate_list = _busy_host;
+    std::sort(_migrate_list.begin(), _migrate_list.end(), cmp);
+    for(auto itr = _migrate_list.begin(); itr != _migrate_list.end(); itr ++){
+//        cout << (*itr)->getType() << endl;
+        shared_ptr<Host> freeHost((*itr));
+        if(chooseAHostToFree(freeHost)){
+            // free success
+            _busy_host.erase(itr);
+            cout <<"free the host :"<< (*itr)->getIndex()<< " type:" << (*itr)->getType() << endl;
+            continue;
+        }
+        break;
+    }
+
+}
+
+int Scheduler::get_migrateVMNumPerDay() const {
+    return _migrateVMNumPerDay;
+}
+
+bool Scheduler::cmp(shared_ptr<Host> & a, shared_ptr<Host> & b) {
+    return (a->getAvailableCpuA() + a->getAvailableCpuB()) > (b->getAvailableCpuA() + b->getAvailableCpuB());
 }
