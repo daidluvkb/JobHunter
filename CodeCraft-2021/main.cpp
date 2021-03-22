@@ -86,11 +86,11 @@ void readFile(const string &testName, Scheduler &scheduler)
     filename.append("/");
     filename.append(testName);
     filename = testName;
-    cout << filename << endl;
+//    cout << filename << endl;
     ifstream infile(filename, ios::in);
-    assert(infile.is_open());
+// assert(infile.is_open());
 
-    // auto &infile = cin;
+//    auto &infile = cin;
     string s; //This variable stores the strings parsed every line
     getline(infile, s);
     fflush(stdin);
@@ -126,8 +126,6 @@ void readFile(const string &testName, Scheduler &scheduler)
         scheduler.declareANewDay();
         scheduler.oneDayMigration();
 //        cout << "****** day:" << i << endl;
-        cout <<  "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
-        scheduler.printMigrateInfo();
         getline(infile, s);
         fflush(stdin);
         int reqNum = stoi(s);
@@ -141,6 +139,7 @@ void readFile(const string &testName, Scheduler &scheduler)
             {
                 auto newvm = addNewVM(s, oneDayAddVM);
                 scheduler.addVM_bystep(newvm);
+                newvm->getHost()->checkMyself();
             }
             else if (s.substr(0, 4) == "(del")
             {
@@ -152,15 +151,15 @@ void readFile(const string &testName, Scheduler &scheduler)
                 scheduler.deleteVM(index);
             }
         }
-
+        scheduler.checkVMS();
         // scheduler.deleteVM(oneDayDelVM);
         // scheduler.addVM(oneDayAddVM);
         // if (i % 100 == 0)
         // {
         //     // cout << i << endl;
-        // auto today_purchased_result = scheduler.getNewPurchasedHosts();
-        // scheduler.getTodayMigration();
-        // scheduler.getTodayAddVMArrangment(oneDayAddVM);
+//         auto today_purchased_result = scheduler.getNewPurchasedHosts();
+//         scheduler.getTodayMigration();
+//         scheduler.getTodayAddVMArrangment(oneDayAddVM);
         // }
         // exit(0);
     }
@@ -173,17 +172,17 @@ int main()
     clock_t start, end;
     //定义clock_t变量
     start = clock();
-//    string testDataName = "/home/czy/MyWorkSpace/JobHunter/training-data/training-1.txt";
-    string testDataName = "../training-data/training-1.txt";
-    string testDataName_2 = "../training-data/training-2.txt";
+    string testDataName = "/home/czy/MyWorkSpace/JobHunter/training-data/training-2.txt";
+//    string testDataName = "../training-data/training-1.txt";
+//    string testDataName = "/home/czy/MyWorkSpace/JobHunter/training-data/training-2.txt";
     //dcout << "Begin to schdule!" << endl;
-    //    ifstream infile(testDataName, ios::in);
+//    ifstream infile(testDataName, ios::in);
     // return 0;
     Scheduler scheduler;
     readFile(testDataName, scheduler);
-    Scheduler scheduler_2;
-    readFile(testDataName_2, scheduler_2);
-    // readOj(scheduler);
+//    Scheduler scheduler_2;
+//    readFile(testDataName_2, scheduler_2);
+//     readOj(scheduler);
 
     //	while(true){
     //		scheduler.deletVM(vector<shared_pt<VirtualMachine>ptr);
@@ -191,11 +190,11 @@ int main()
     //	}
 
     end = clock();   
-    unsigned long long  cost1 = scheduler.getCost();
-    unsigned long long  cost2 = scheduler_2.getCost();
-    cout << "cost1: " << cost1 << endl;     
-    cout << "cost2: " << cost2 << endl;
-    cout << "sum cost: " << cost1 + cost2 << endl;
+//    unsigned long long  cost1 = scheduler.getCost();
+//    unsigned long long  cost2 = scheduler_2.getCost();
+//    cout << "cost1: " << cost1 << endl;
+//    cout << "cost2: " << cost2 << endl;
+//    cout << "sum cost: " << cost1 + cost2 << endl;
 
     // cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
 

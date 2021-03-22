@@ -1,6 +1,7 @@
 #include "Scheduler.h"
 #include <float.h>
 #include <cmath>
+#include <assert.h>
 
 Scheduler::Scheduler(/* args */)
 {
@@ -456,8 +457,16 @@ vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts()
 
 void Scheduler::getTodayMigration() 
 {
-    printf( "(migration, 0)\n");
+//    printf( "(migration, 0)\n");
+//    fflush(stdout);
+//    cout <<  "(migration, " << get_migrateVMNumPerDay() << ")" << endl;
+//    cout <<  "(migration, " << 0 << ")" << endl;
+    printf("(migration, %d)\n", get_migrateVMNumPerDay());
+
+    printf("%s", _todayMigrationInfo.str().c_str());
     fflush(stdout);
+    _todayMigrationInfo.str("");
+//    printMigrateInfo();
     // cout << "(migration, 0)"<< endl;
 }
 /**
@@ -526,7 +535,7 @@ void Scheduler::checkVMS()
         // {
         //     cout << "wrong vm host  id"<< endl;
         // }
-        
+        _vms[i]->checkMyself();
     }
     
 }
@@ -633,6 +642,7 @@ bool Scheduler::migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targ
     /*
      * migrate the vm to the target host
      */
+    if(_migrateVMNumPerDay >= ((5 * _vms.size())/ 1000 -1)) return false;
     if(targetHost->addVM_try(vm)){
         vm->getHost()->deleteVM(vm->getId());
         vm->setHost(targetHost);
@@ -676,16 +686,17 @@ bool Scheduler::chooseAHostToFree(shared_ptr<Host>& leastBusyHost) {
             shared_ptr<Host> hostToMigrate(_migrate_list[i]);
             if(migrateVM(vmToFree, hostToMigrate)){ // migrate success
                 _migrateVMNumPerDay ++;
+
                 flag = true;
 //                it++;
                 it = leastBusyHost->get_vms().begin();
                 char node = vmToFree->getNode();
-                if(node =='C'){
+                if(node =='D'){
                     _todayMigrationInfo << "(" << vmToFree->getId() << ", " << hostToMigrate->getIndex() << ")\n";
                 }else{
                     _todayMigrationInfo << "(" << vmToFree->getId() << ", " << hostToMigrate->getIndex() << ", " << node <<")\n";
                 }
-
+                if(_migrateVMNumPerDay >= ((5 * _vms.size())/ 1000 -1)) return false;
                 break;
             }
         }
@@ -733,6 +744,13 @@ void Scheduler::oneDayMigration() {
         }
 //        break;
     }
+
+    for(auto it:_hosts){
+//        cout <<"selfcheck\n";
+        (*it).checkMyself();
+    }
+//    cout << get_migrateVMNumPerDay() << " " << (5*_vms.size()/ 1000 - 1) << endl;
+//    assert(get_migrateVMNumPerDay() <= (5*_vms.size()/ 1000 - 1) );
 
 }
 
