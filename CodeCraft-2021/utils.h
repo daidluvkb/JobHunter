@@ -5,6 +5,7 @@
 #ifndef CODECRAFT_2021_UTILS_H
 #define CODECRAFT_2021_UTILS_H
 #include <string>
+#include <algorithm>
 #define dcout 0 && cout//或者NULL && cout
 // #define dcout cout
 

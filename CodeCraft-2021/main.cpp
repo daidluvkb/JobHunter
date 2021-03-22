@@ -119,7 +119,12 @@ void readFile(const string &testName, Scheduler &scheduler)
 
     for (int i = 0; i < days; i++)
     {
+        /*
+        * at the beginning of one day, first migrate
+        */
         scheduler.declareANewDay();
+        scheduler.oneDayMigration();
+        cout << "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
         getline(infile, s);
         fflush(stdin);
         int reqNum = stoi(s);
@@ -132,7 +137,7 @@ void readFile(const string &testName, Scheduler &scheduler)
             if (s.substr(0, 4) == "(add")
             {
                 auto newvm = addNewVM(s, oneDayAddVM);
-                scheduler.addVM_bystep(newvm);    
+                scheduler.addVM_bystep(newvm);
             }
             else if (s.substr(0, 4) == "(del")
             {
