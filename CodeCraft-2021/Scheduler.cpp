@@ -118,47 +118,55 @@ void Scheduler::addVM_opt(shared_ptr<VirtualMachine>& vm){
     char Node = 'D';
     for (size_t i = 0; i < _busy_host.size(); i++)
     {
-        if (is_double)
-        {
-            if (_busy_host[i]->getAvailableCpu(true) >= (vm->getNumOfCpu() / 2) &&
-                _busy_host[i]->getAvailableMem(true) >= (vm->getSizeOfMem() / 2))
-            {
-                if(abs(((double)_busy_host[i]->getAvailableMem(true) / (double)_busy_host[i]->getAvailableCpu(true)) - vm_mem_to_cpu)
-                 < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
-                    min_Host_mem_to_cpu = (double)_busy_host[i]->getAvailableMem(true) / (double)_busy_host[i]->getAvailableCpu(true);
-                    index = i;
-                }
-            }
-        }
-        else
-        {
-            if (_busy_host[i]->getAvailableCpuA() >= vm->getNumOfCpu() &&
-                _busy_host[i]->getAvailableMemA() >= vm->getSizeOfMem()){
-                    if(abs(((double)_busy_host[i]->getAvailableMemA() / (double)_busy_host[i]->getAvailableCpuA()) - vm_mem_to_cpu)
-                     < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
-                        min_Host_mem_to_cpu = (double)_busy_host[i]->getAvailableMemA() / (double)_busy_host[i]->getAvailableCpuA();
-                        index = i;
-                        Node = 'A';
-                }
-            }
-            if(_busy_host[i]->getAvailableCpuB() > vm->getNumOfCpu() &&
-               _busy_host[i]->getAvailableMemB() > vm->getSizeOfMem()){
-                    if(abs(((double)_busy_host[i]->getAvailableMemB() / (double)_busy_host[i]->getAvailableCpuB()) - vm_mem_to_cpu)
-                     < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
-                        min_Host_mem_to_cpu = (double)_busy_host[i]->getAvailableMemB() / (double)_busy_host[i]->getAvailableCpuB();
-                        index = i;
-                        Node = 'B';
-
-                   }
-               }
-
+        if (_busy_host[i]->addVM_try(vm))
+        {            
+            vm->setHost(_busy_host[i]);
+            return ;
         }
     }
-    if(min_Host_mem_to_cpu != DBL_MAX){
-        _busy_host[index]->addVM_opt(vm, Node);
-        vm->setHost(_busy_host[index]);
-        return;
-    }
+    // for (size_t i = 0; i < _busy_host.size(); i++)
+    // {
+    //     if (is_double)
+    //     {
+    //         if (_busy_host[i]->getAvailableCpu(true) >= (vm->getNumOfCpu() / 2) &&
+    //             _busy_host[i]->getAvailableMem(true) >= (vm->getSizeOfMem() / 2))
+    //         {
+    //             if(abs(((double)_busy_host[i]->getAvailableMem(true) / (double)_busy_host[i]->getAvailableCpu(true)) - vm_mem_to_cpu)
+    //              < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
+    //                 min_Host_mem_to_cpu = (double)_busy_host[i]->getAvailableMem(true) / (double)_busy_host[i]->getAvailableCpu(true);
+    //                 index = i;
+    //             }
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (_busy_host[i]->getAvailableCpuA() >= vm->getNumOfCpu() &&
+    //             _busy_host[i]->getAvailableMemA() >= vm->getSizeOfMem()){
+    //                 if(abs(((double)_busy_host[i]->getAvailableMemA() / (double)_busy_host[i]->getAvailableCpuA()) - vm_mem_to_cpu)
+    //                  < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
+    //                     min_Host_mem_to_cpu = (double)_busy_host[i]->getAvailableMemA() / (double)_busy_host[i]->getAvailableCpuA();
+    //                     index = i;
+    //                     Node = 'A';
+    //             }
+    //         }
+    //         if(_busy_host[i]->getAvailableCpuB() > vm->getNumOfCpu() &&
+    //            _busy_host[i]->getAvailableMemB() > vm->getSizeOfMem()){
+    //                 if(abs(((double)_busy_host[i]->getAvailableMemB() / (double)_busy_host[i]->getAvailableCpuB()) - vm_mem_to_cpu)
+    //                  < abs(min_Host_mem_to_cpu - vm_mem_to_cpu)){
+    //                     min_Host_mem_to_cpu = (double)_busy_host[i]->getAvailableMemB() / (double)_busy_host[i]->getAvailableCpuB();
+    //                     index = i;
+    //                     Node = 'B';
+
+    //                }
+    //            }
+
+    //     }
+    // }
+    // if(min_Host_mem_to_cpu != DBL_MAX){
+    //     _busy_host[index]->addVM_opt(vm, Node);
+    //     vm->setHost(_busy_host[index]);
+    //     return;
+    // }
 
     for (auto i = _free_host.begin(); i != _free_host.end(); i++)
     {
@@ -319,7 +327,7 @@ void Scheduler::addVM_bystep(shared_ptr<VirtualMachine> &vm)
 {
     int id = vm->getId();
     _vms.insert(make_pair(id, vm));
-    addVM_opt(vm);
+    addVM(vm);
 
     if (!vm->getHost()->checkMyself())
     {
@@ -470,17 +478,18 @@ shared_ptr<const HostInfo> Scheduler::chooseAHost_(const int cpu, const int mem)
     double mem_to_cpu = (double)mem / (double)cpu;
     double gap = DBL_MAX;
     int count = 3;  //取三个最接近的
-    int count_ = 10;    //取十个可以装入的
-    int index = -1; //满足条件的下标
-    int index_ = -1;    //以防万一
+    int count_ = 10; //取十个可以装入的
+    int index = -1;  //满足条件的下标
+    int index_ = -1; //以防万一
     // int min_dailycost = INT32_MAX;
     for (size_t i = 0; i < _host_candidates.size() && count > 0 && count_ > 0; i++)
     {
-        if(_host_candidates[i].cpu >= cpu && _host_candidates[i].mem >= mem){
+        if (_host_candidates[i].cpu >= cpu && _host_candidates[i].mem >= mem)
+        {
             index_ = index_ == -1 ? i : index_;
-            if(fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu)-mem_to_cpu) < gap
-              && ((double)mem / (double)_host_candidates[i].mem) > 0.4 /*&& _host_candidates[i].dailyCost < min_dailycost*/){
-                gap = fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu)-mem_to_cpu);
+            if (fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu) < gap && ((double)mem / (double)_host_candidates[i].mem) > 0.4 /*&& _host_candidates[i].dailyCost < min_dailycost*/)
+            {
+                gap = fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu);
                 // min_dailycost = _host_candidates[i].dailyCost;
                 index = i;
                 count--;
@@ -488,9 +497,10 @@ shared_ptr<const HostInfo> Scheduler::chooseAHost_(const int cpu, const int mem)
             count_--;
         }
     }
-    if(index != -1) return make_shared<HostInfo>(_host_candidates[index]);
-    else return make_shared<HostInfo>(_host_candidates[index_]);
-    
+    if (index != -1)
+        return make_shared<HostInfo>(_host_candidates[index]);
+    else
+        return make_shared<HostInfo>(_host_candidates[index_]);
 }
 
 unsigned long long Scheduler::getCost() 
@@ -598,7 +608,7 @@ int Scheduler::getTodayDailyCost()
 {
     for (size_t i = 0; i < _busy_host.size(); i++)
     {
-        cost+=_busy_host[i]->getCostPerDay();
+        cost += _busy_host[i]->getCostPerDay();
     }
     return 0;
 }
