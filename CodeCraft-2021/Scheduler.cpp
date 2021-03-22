@@ -478,8 +478,10 @@ shared_ptr<const HostInfo> Scheduler::chooseAHost(const int cpu, const int mem)
 shared_ptr<const HostInfo> Scheduler::chooseAHost_(const int cpu, const int mem){
     double mem_to_cpu = (double)mem / (double)cpu;
     double gap = DBL_MAX;
-    int count = 3;  //取三个最接近�    int count_ = 10; //取十个可以装入的
-    int index = -1;  //满足条件的下�    int index_ = -1; //以防万一
+    int count = 3;  //取三个最接近的
+    int count_ = 10; //取十个可以装入的
+    int index = -1;  //满足条件的下标
+    int index_ = -1; //以防万一
     // int min_dailycost = INT32_MAX;
     for (size_t i = 0; i < _host_candidates.size() && count > 0 && count_ > 0; i++)
     {

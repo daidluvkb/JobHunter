@@ -1,3 +1,0 @@
-/mnt/d/HW/JobHunter-main/build/CMakeFiles/rebuild_cache.dir
-/mnt/d/HW/JobHunter-main/build/CMakeFiles/CodeCraft-2021.dir
-/mnt/d/HW/JobHunter-main/build/CMakeFiles/edit_cache.dir
