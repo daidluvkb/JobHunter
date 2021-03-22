@@ -306,3 +306,6 @@ bool Host::checkMyself() const
     return right;
 }
 
+unordered_map<int, shared_ptr<VirtualMachine>> & Host::get_vms(){
+    return _vms;
+}

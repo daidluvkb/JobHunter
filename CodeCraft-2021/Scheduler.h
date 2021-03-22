@@ -68,12 +68,13 @@ public:
     *migration oprations
     */
 private:
-    void migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targethost);
+//    void migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost);
     shared_ptr<Host> chooseAHostToFree();
-
+    void migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost);
+    vector<shared_ptr<Host>> _migrate_list;
 public:
     void getTodayMigration();
-    bool freeHost(shared_ptr<Host>& host);
+    void freeHost(shared_ptr<Host>& host);
 };
 
 #endif
