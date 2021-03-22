@@ -34,7 +34,7 @@ then
  exit -1
 fi
 
-make
+make -j4
 tmp=$?
  echo "make return:" ${tmp}
 if [ ${tmp} -ne 0 ]
