@@ -1,0 +1,32 @@
+[
+{
+  "directory": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/build",
+  "command": "D:/MinGW/bin/mingw32-g++.exe  @CMakeFiles/CodeCraft-2021.dir/includes_CXX.rsp  -O0 -Wall -g -ggdb -std=c++11 -o CMakeFiles/CodeCraft-2021.dir/Dispatch.cpp.obj -c \"C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/Dispatch.cpp\"",
+  "file": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/Dispatch.cpp"
+},
+{
+  "directory": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/build",
+  "command": "D:/MinGW/bin/mingw32-g++.exe  @CMakeFiles/CodeCraft-2021.dir/includes_CXX.rsp  -O0 -Wall -g -ggdb -std=c++11 -o CMakeFiles/CodeCraft-2021.dir/Host.cpp.obj -c \"C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/Host.cpp\"",
+  "file": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/Host.cpp"
+},
+{
+  "directory": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/build",
+  "command": "D:/MinGW/bin/mingw32-g++.exe  @CMakeFiles/CodeCraft-2021.dir/includes_CXX.rsp  -O0 -Wall -g -ggdb -std=c++11 -o CMakeFiles/CodeCraft-2021.dir/Request.cpp.obj -c \"C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/Request.cpp\"",
+  "file": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/Request.cpp"
+},
+{
+  "directory": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/build",
+  "command": "D:/MinGW/bin/mingw32-g++.exe  @CMakeFiles/CodeCraft-2021.dir/includes_CXX.rsp  -O0 -Wall -g -ggdb -std=c++11 -o CMakeFiles/CodeCraft-2021.dir/Scheduler.cpp.obj -c \"C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/Scheduler.cpp\"",
+  "file": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/Scheduler.cpp"
+},
+{
+  "directory": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/build",
+  "command": "D:/MinGW/bin/mingw32-g++.exe  @CMakeFiles/CodeCraft-2021.dir/includes_CXX.rsp  -O0 -Wall -g -ggdb -std=c++11 -o CMakeFiles/CodeCraft-2021.dir/VirtualMachine.cpp.obj -c \"C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/VirtualMachine.cpp\"",
+  "file": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/VirtualMachine.cpp"
+},
+{
+  "directory": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/build",
+  "command": "D:/MinGW/bin/mingw32-g++.exe  @CMakeFiles/CodeCraft-2021.dir/includes_CXX.rsp  -O0 -Wall -g -ggdb -std=c++11 -o CMakeFiles/CodeCraft-2021.dir/main.cpp.obj -c \"C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/main.cpp\"",
+  "file": "C:/Users/Ashley Li/Desktop/JobHunter/CodeCraft-2021/main.cpp"
+}
+]
