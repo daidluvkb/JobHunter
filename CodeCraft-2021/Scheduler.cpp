@@ -474,17 +474,19 @@ shared_ptr<const HostInfo> Scheduler::chooseAHost(const int cpu, const int mem)
 }
 
 shared_ptr<const HostInfo> Scheduler::chooseAHost_(const int cpu, const int mem){
-    double mem_to_cpu = (double)mem / (double)cpu;
+     double mem_to_cpu = (double)mem / (double)cpu;
     double gap = DBL_MAX;
-    int count = 3;  //取三个最接近�    int count_ = 10; //取十个可以装入的
-    int index = -1;  //满足条件的下�    int index_ = -1; //以防万一
+    int count = 3;  //取三个最接近的
+    int count_ = 10; //取十个可以装入的
+    int index = -1;  //满足条件的下标
+    int index_ = -1; //以防万一
     // int min_dailycost = INT32_MAX;
     for (size_t i = 0; i < _host_candidates.size() && count > 0 && count_ > 0; i++)
     {
         if (_host_candidates[i].cpu >= cpu && _host_candidates[i].mem >= mem)
         {
             index_ = index_ == -1 ? i : index_;
-            if (fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu) < gap && ((double)mem / (double)_host_candidates[i].mem) > 0.8 /*&& _host_candidates[i].dailyCost < min_dailycost*/)
+            if (fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu) < gap && ((double)mem / (double)_host_candidates[i].mem) > 0.4 /*&& _host_candidates[i].dailyCost < min_dailycost*/)
             {
                 gap = fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu);
                 // min_dailycost = _host_candidates[i].dailyCost;
