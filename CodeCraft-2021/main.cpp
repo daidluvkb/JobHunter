@@ -87,10 +87,10 @@ void readFile(const string &testName, Scheduler &scheduler)
     filename.append(testName);
     filename = testName;
 //    cout << filename << endl;
-    ifstream infile(filename, ios::in);
+//    ifstream infile(filename, ios::in);
 // assert(infile.is_open());
 
-//    auto &infile = cin;
+    auto &infile = cin;
     string s; //This variable stores the strings parsed every line
     getline(infile, s);
     fflush(stdin);
@@ -139,7 +139,7 @@ void readFile(const string &testName, Scheduler &scheduler)
             {
                 auto newvm = addNewVM(s, oneDayAddVM);
                 scheduler.addVM_bystep(newvm);
-                newvm->getHost()->checkMyself();
+//                newvm->getHost()->checkMyself();
             }
             else if (s.substr(0, 4) == "(del")
             {
@@ -151,15 +151,15 @@ void readFile(const string &testName, Scheduler &scheduler)
                 scheduler.deleteVM(index);
             }
         }
-        scheduler.checkVMS();
+//        scheduler.checkVMS();
         // scheduler.deleteVM(oneDayDelVM);
         // scheduler.addVM(oneDayAddVM);
         // if (i % 100 == 0)
         // {
         //     // cout << i << endl;
-//         auto today_purchased_result = scheduler.getNewPurchasedHosts();
-//         scheduler.getTodayMigration();
-//         scheduler.getTodayAddVMArrangment(oneDayAddVM);
+         auto today_purchased_result = scheduler.getNewPurchasedHosts();
+         scheduler.getTodayMigration();
+         scheduler.getTodayAddVMArrangment(oneDayAddVM);
         // }
         // exit(0);
     }
@@ -172,9 +172,9 @@ int main()
     clock_t start, end;
     //定义clock_t变量
     start = clock();
-    string testDataName = "/home/czy/MyWorkSpace/JobHunter/training-data/training-2.txt";
+    string testDataName = "/home/czy/MyWorkSpace/JobHunter/training-data/training-1.txt";
 //    string testDataName = "../training-data/training-1.txt";
-//    string testDataName = "/home/czy/MyWorkSpace/JobHunter/training-data/training-2.txt";
+    string testDataName_2 = "/home/czy/MyWorkSpace/JobHunter/training-data/training-2.txt";
     //dcout << "Begin to schdule!" << endl;
 //    ifstream infile(testDataName, ios::in);
     // return 0;
@@ -195,8 +195,8 @@ int main()
 //    cout << "cost1: " << cost1 << endl;
 //    cout << "cost2: " << cost2 << endl;
 //    cout << "sum cost: " << cost1 + cost2 << endl;
-
-    // cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
+//
+//     cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
 
     return 0;
 }

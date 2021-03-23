@@ -36,6 +36,7 @@ class Host{
         int getIndex();
         bool addVM(shared_ptr<VirtualMachine>& vm);
         bool addVM_try(shared_ptr<VirtualMachine>& vm);
+        bool addVM_try_migrate(shared_ptr<VirtualMachine>& vm);
         bool addVM_opt(shared_ptr<VirtualMachine>& vm, char& Node);
         //void addVM(int id, bool left); // A or B 
         int getAvailableCpu(bool isDouble);

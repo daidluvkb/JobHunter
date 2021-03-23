@@ -94,7 +94,7 @@ void Scheduler::deleteVM(const int id)
                     break;
                 }
             }
-            if (i == _busy_host.end())
+            if (i != _busy_host.end())
             {                
                 _addHostToFree(host);
             }
@@ -524,19 +524,27 @@ unsigned long long Scheduler::getCost()
 
 void Scheduler::checkVMS() 
 {
-    for (size_t i = 0; i < _vms.size(); i++)
-    {
-        // if (!_vms[i]->getHost())
-        // {
-        //     cout << "vm dont have host"<< endl;
-        // }
-        
-        // if (_vms[i]->getHost()->getIndex() >= _hosts.size() || _vms[i]->getHost()->getIndex() < 0)
-        // {
-        //     cout << "wrong vm host  id"<< endl;
-        // }
-        _vms[i]->checkMyself();
+//    for (size_t i = 0; i < _vms.size(); i++)
+//    {
+//        // if (!_vms[i]->getHost())
+//        // {
+//        //     cout << "vm dont have host"<< endl;
+//        // }
+//
+//        // if (_vms[i]->getHost()->getIndex() >= _hosts.size() || _vms[i]->getHost()->getIndex() < 0)
+//        // {
+//        //     cout << "wrong vm host  id"<< endl;
+//        // }
+//        _vms[i]->checkMyself();
+//    }
+    for(auto it:_hosts){
+//        cout <<"selfcheck\n";
+        (*it).checkMyself();
+//        if(!(*it).checkMyself()){
+//            cout << "wrong migrate" << endl;
+//        };
     }
+
     
 }
 
@@ -642,9 +650,9 @@ bool Scheduler::migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targ
     /*
      * migrate the vm to the target host
      */
-    if(_migrateVMNumPerDay >= ((5 * _vms.size())/ 1000 -1)) return false;
-    if(targetHost->addVM_try(vm)){
-        vm->getHost()->deleteVM(vm->getId());
+    if(_migrateVMNumPerDay >= ((int)(_vms.size()*0.005-2))) return false;
+    if(targetHost->addVM_try_migrate(vm)){
+//        vm->getHost()->deleteVM(vm->getId());
         vm->setHost(targetHost);
 //        targetHost->addVM(vm);
         return true;
@@ -683,22 +691,22 @@ bool Scheduler::chooseAHostToFree(shared_ptr<Host>& leastBusyHost) {
             shared_ptr<VirtualMachine> vmToFree((*it).second);
             bool flag = false;
             for(int i = _migrate_list.size()-1; leastBusyHost->getIndex() != _migrate_list[i]->getIndex(); i--){
-            shared_ptr<Host> hostToMigrate(_migrate_list[i]);
-            if(migrateVM(vmToFree, hostToMigrate)){ // migrate success
-                _migrateVMNumPerDay ++;
+                shared_ptr<Host> hostToMigrate(_migrate_list[i]);
+                if(migrateVM(vmToFree, hostToMigrate)){ // migrate success
+                    _migrateVMNumPerDay ++;
 
-                flag = true;
-//                it++;
-                it = leastBusyHost->get_vms().begin();
-                char node = vmToFree->getNode();
-                if(node =='D'){
-                    _todayMigrationInfo << "(" << vmToFree->getId() << ", " << hostToMigrate->getIndex() << ")\n";
-                }else{
-                    _todayMigrationInfo << "(" << vmToFree->getId() << ", " << hostToMigrate->getIndex() << ", " << node <<")\n";
+                    flag = true;
+    //                it++;
+                    it = leastBusyHost->get_vms().begin();
+                    char node = vmToFree->getNode();
+                    if(node =='D'){
+                        _todayMigrationInfo << "(" << vmToFree->getId() << ", " << hostToMigrate->getIndex() << ")\n";
+                    }else{
+                        _todayMigrationInfo << "(" << vmToFree->getId() << ", " << hostToMigrate->getIndex() << ", " << node <<")\n";
+                    }
+//                    if(_migrateVMNumPerDay >= ((5 * _vms.size())/ 1000 -1)) return false;
+                    break;
                 }
-                if(_migrateVMNumPerDay >= ((5 * _vms.size())/ 1000 -1)) return false;
-                break;
-            }
         }
         if(!flag){
             break;
@@ -744,12 +752,12 @@ void Scheduler::oneDayMigration() {
         }
 //        break;
     }
-
-    for(auto it:_hosts){
-//        cout <<"selfcheck\n";
-        (*it).checkMyself();
-    }
-//    cout << get_migrateVMNumPerDay() << " " << (5*_vms.size()/ 1000 - 1) << endl;
+    checkVMS();
+//    for(auto it:_hosts){
+////        cout <<"selfcheck\n";
+//        (*it).checkMyself();
+//    }
+//    cout << get_migrateVMNumPerDay() << " "<< _vms.size() << " " << ((int)(_vms.size()*0.005) - 1) << endl;
 //    assert(get_migrateVMNumPerDay() <= (5*_vms.size()/ 1000 - 1) );
 
 }
