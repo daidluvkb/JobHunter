@@ -22,6 +22,110 @@ Host::Host(const HostInfo &hostinfo, const int index)
     _left_mem_B = _left_mem_A;
 }
 
+int Host::getSmallestCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm) const
+{
+    int smallest = INT16_MAX;
+    if(vm->IsDoubleNode() == 0){
+
+        smallest = min(smallest, _left_cpu_A - (vm->getNumOfCpu() / 2));
+        smallest = min(smallest, _left_cpu_B - (vm->getNumOfCpu() / 2));
+        smallest = min(smallest, _left_mem_A - (vm->getSizeOfMem() / 2));
+        smallest = min(smallest, _left_mem_B - (vm->getSizeOfMem() / 2));
+
+    }
+    else{
+        if(_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu()){
+
+            smallest = min(smallest, _left_cpu_A - vm->getNumOfCpu());
+            smallest = min(smallest, _left_mem_A - vm->getSizeOfMem());
+        }
+        else if(_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu()){
+       
+            smallest = min(smallest, _left_cpu_B - vm->getNumOfCpu());
+            smallest = min(smallest, _left_mem_B - vm->getSizeOfMem());
+        }        
+    }
+    return smallest;
+}
+
+int Host::getLargestCapacityAfterAdd(const shared_ptr<VirtualMachine>& vm) const
+{
+    int largest = 0;
+    if (vm->IsDoubleNode() == 0)
+    {
+
+        largest = max(largest, _left_cpu_A - (vm->getNumOfCpu() / 2));
+        largest = max(largest, _left_cpu_B - (vm->getNumOfCpu() / 2));
+        largest = max(largest, _left_mem_A - (vm->getSizeOfMem() / 2));
+        largest = max(largest, _left_mem_B - (vm->getSizeOfMem() / 2));
+    }
+    else
+    {
+        if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
+        {
+
+            largest = max(largest, _left_cpu_A - vm->getNumOfCpu());
+            largest = max(largest, _left_mem_A - vm->getSizeOfMem());
+        }
+        else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
+        {
+
+            largest = max(largest, _left_cpu_B - vm->getNumOfCpu());
+            largest = max(largest, _left_mem_B - vm->getSizeOfMem());
+        }
+    }
+    return largest;
+}
+
+
+
+void Host::getAbnormalCapcityAfterAdd(const shared_ptr<VirtualMachine> &vm, int &small, int &large) const
+{
+    int largest = 0;
+    int tmpdata[4];
+    if (vm->IsDoubleNode() == 0)
+    {
+        tmpdata[0] = _left_cpu_A - (vm->getNumOfCpu() / 2);
+        tmpdata[1] = _left_cpu_B - (vm->getNumOfCpu() / 2);
+        tmpdata[2] = _left_mem_A - (vm->getSizeOfMem() / 2);
+        tmpdata[3] = _left_mem_B - (vm->getSizeOfMem() / 2);
+    }
+    else
+    {
+        if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
+        {
+
+            tmpdata[0] = _left_cpu_A - vm->getNumOfCpu();
+            tmpdata[1] = _left_cpu_B;
+            tmpdata[2] = _left_mem_A - vm->getSizeOfMem();
+            tmpdata[3] = _left_mem_B;
+        }
+        else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
+        {
+            tmpdata[0] = _left_cpu_A;
+            tmpdata[1] = _left_cpu_B - vm->getNumOfCpu();
+            tmpdata[2] = _left_mem_A;
+            tmpdata[3] = _left_mem_B - vm->getSizeOfMem();
+        }
+    }
+    small = tmpdata[0];
+    for (size_t i = 1; i < 4; i++)
+    {
+        small = min(small, tmpdata[i]);
+    }
+    large = small == tmpdata[0] ? tmpdata[2] : large;
+    large = small == tmpdata[2] ? tmpdata[0] : large;
+    large = small == tmpdata[1] ? tmpdata[3] : large;
+    large = small == tmpdata[3] ? tmpdata[1] : large;
+    // if (tmpdata[0] < tmpdata[1] && tmpdata[2] > tmpdata[3])
+    // {
+    //      small = tmpdata[0];
+    // }
+    // else if (tmpdata[0] > tmpdata[1] && tmpdata[2] < tmpdata[3])
+    // {
+    // }
+}
+
 int Host::getNumOfCpu()
 {
     return m_num_of_cpu;

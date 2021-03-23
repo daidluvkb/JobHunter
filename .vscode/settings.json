@@ -47,5 +47,7 @@
         "memory_resource": "cpp",
         "random": "cpp",
         "string": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/CodeCraft-2021",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

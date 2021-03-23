@@ -32,7 +32,7 @@ int VirtualMachine::getSizeOfMem()
     return m_size_of_mem;
 }
 
-int VirtualMachine::IsDoubleNode()
+int VirtualMachine::IsDoubleNode() const
 {
     return m_is_double_node;
 }

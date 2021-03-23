@@ -26,20 +26,16 @@ class Host{
         bool checkMyself() const;
         Host(const string &type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday, int index);
         Host(const HostInfo &hostinfo, const int index);
-        int getSmallestCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm) const;
-        int getLargestCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm) const;
-        void getAbnormalCapcityAfterAdd(const shared_ptr<VirtualMachine> &vm, int &small, int &large) const;
         void setIndex(const int index) { m_index = index; }
         int getNumOfCpu();
         int getSizeOfMem();
         int getCostBase();
         int getCostPerDay();
-        unordered_map<int, shared_ptr<VirtualMachine>>& get_vms();
+
         void deleteVM(int id);
         int getIndex();
         bool addVM(shared_ptr<VirtualMachine>& vm);
         bool addVM_try(shared_ptr<VirtualMachine>& vm);
-        bool addVM_try_migrate(shared_ptr<VirtualMachine>& vm);
         bool addVM_opt(shared_ptr<VirtualMachine>& vm, char& Node);
         //void addVM(int id, bool left); // A or B 
         int getAvailableCpu(bool isDouble);
@@ -50,7 +46,10 @@ class Host{
         int getAvailableMemB();
         bool isFree();
         int getNumOfVM() const { return _vms.size(); }
+<<<<<<< HEAD
+=======
         //int getLeftAfterAdd(const shared_ptr<VirtualMachine>& vm, char& Node);
+>>>>>>> lst
 
     private:
         void print() const;

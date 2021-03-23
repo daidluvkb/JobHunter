@@ -62,6 +62,7 @@ public:
 
     shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
     shared_ptr<const HostInfo> chooseAHost_(const int cpu, const int mem);
+    shared_ptr<const HostInfo> chooseAHost_opt2(const int cpu, const int mem);
     unsigned long long getCost();
     void checkVMS();
 
