@@ -78,18 +78,17 @@ shared_ptr<VirtualMachine> addNewVM(string & s, vector<shared_ptr<VirtualMachine
 
 
 #include <unistd.h>
-void readFile(const string &testName, Scheduler &scheduler)
+void readFile_testdiff(const string &testName, Scheduler &scheduler, bool is_double)
 {
-    // char cwd[50];
-    // getcwd(cwd, 50);
-    // string filename(cwd);
-    // filename.append("/");
-    // filename.append(testName);
-    // cout << filename << endl;
-    // ifstream infile(filename, ios::in);
-    // assert(infile.is_open());
+    char cwd[50];
+    getcwd(cwd, 50);
+    string filename(cwd);
+    filename.append("/");
+    filename.append(testName);
+    cout << filename << endl;
+    ifstream infile(filename, ios::in);
+    assert(infile.is_open());
 
-    auto &infile = cin;
     string s; //This variable stores the strings parsed every line
     getline(infile, s);
     fflush(stdin);
@@ -137,8 +136,11 @@ void readFile(const string &testName, Scheduler &scheduler)
             if (s.substr(0, 4) == "(add")
             {
                 auto newvm = addNewVM(s, oneDayAddVM);
-                scheduler.addVM_bystep(newvm);
-//                newvm->getHost()->checkMyself();
+                if (is_double && newvm->getNode() == 'D')
+                    scheduler.addVM_bystep(newvm);
+                else if (!is_double && newvm->getNode() != 'D')
+                    scheduler.addVM_bystep(newvm);
+                //                newvm->getHost()->checkMyself();
             }
             else if (s.substr(0, 4) == "(del")
             {
@@ -147,120 +149,292 @@ void readFile(const string &testName, Scheduler &scheduler)
                 int id_t = s.find(',', id_h);
                 int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
                 oneDayDelVM.push_back(index);
-                scheduler.deleteVM(index);
+
+                scheduler.deleteVM_diff(index, is_double);
             }
         }
-//        scheduler.checkVMS();
-        // scheduler.deleteVM(oneDayDelVM);
-        // scheduler.addVM(oneDayAddVM);
-        // if (i % 100 == 0)
-        // {
-        //     // cout << i << endl;
-        auto today_purchased_result = scheduler.getNewPurchasedHosts();
-        scheduler.getTodayMigration();
-        scheduler.getTodayAddVMArrangment(oneDayAddVM);
-        // }
-        // exit(0);
+       
     }
-    // scheduler.checkVMS();
+    infile.close();
 }
+    void readFile(const string &testName, Scheduler &scheduler)
+    {
+        // char cwd[50];
+        // getcwd(cwd, 50);
+        // string filename(cwd);
+        // filename.append("/");
+        // filename.append(testName);
+        // cout << filename << endl;
+        // ifstream infile(filename, ios::in);
+        // assert(infile.is_open());
 
-int main()
-{
-    ios::sync_with_stdio(false);
-    clock_t start, end;
-    //定义clock_t变量
-    start = clock();
-   string testDataName = "../training-data/training-1.txt";
-    string testDataName_2 = "../training-data/training-2.txt";
-    //dcout << "Begin to schdule!" << endl;
-//    ifstream infile(testDataName, ios::in);
-    // return 0;
-    Scheduler scheduler;
-    readFile(testDataName, scheduler);
-//    Scheduler scheduler_2;
-//    readFile(testDataName_2, scheduler_2);
-//     readOj(scheduler);
+        auto &infile = cin;
+        string s; //This variable stores the strings parsed every line
+        getline(infile, s);
+        fflush(stdin);
+        int hostsTypeNum = stoi(s);
+        for (int i = 0; i < hostsTypeNum; i++)
+        {
+            getline(infile, s);
+            fflush(stdin);
+            makeNewHost(s);
+        }
 
-    //	while(true){
-    //		scheduler.deletVM(vector<shared_pt<VirtualMachine>ptr);
-    //		scheduler.add(vector);
-    //	}
+        scheduler.setHostCandidates(hostInfos);
 
-    // // end = clock();   
-    // unsigned long long  cost1 = scheduler.getCost();
-    // unsigned long long  cost2 = scheduler_2.getCost();
-    // cout << "cost1: " << cost1 << endl;     
-    // cout << "cost2: " << cost2 << endl;
-    // cout << "sum cost: " << cost1 + cost2 << endl;
-//
-//     cout << "time = " << double(end - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
+        getline(infile, s);
+        fflush(stdin);
+        int vmTypeNum = stoi(s);
+        for (int i = 0; i < vmTypeNum; i++)
+        {
+            getline(infile, s);
+            fflush(stdin);
+            makeNewVM(s);
+        }
 
-    return 0;
-}
-int old_main()
-{
-	// using namespace std;
-	// string testdataname = "../../training-data/training-1.txt";
-	// ifstream infile(testdataname, ios::in);
-    
-    // assert(infile.is_open());   //若失�则输出错误消�并终止程序运�unordered_map<string, pair<int, int>> vms;
-	// unsigned long long cpu_req = 0, mem_req = 0;
-	// string s;
-	// int cnt = 0;
-	// while (getline(infile, s))
-	// {
-	// 	if(s[0]!='('){
-	// 		cnt++;
-	// 		if (cnt % 10 == 0)
-	// 			cout << "--day " << cnt << "-- cpu req: " << cpu_req << " mem_req: " << mem_req << endl;
-	// 	}else if(s.substr(0, 4) == "(add")
-	// 	{
-	// 		int id_h = s.find(' ');
-	// 		int id_t = s.find(',', id_h);
-	// 		string id = s.substr(id_h + 1, id_t - id_h - 1);
-	// 		auto itr = vms.find(id);
-	// 		if (itr != vms.end())
-	// 		{
-	// 			cpu_req += itr->second.first;
-	// 			mem_req += itr->second.second;
-	// 		}
-	// 	}
-	// 	else if (s.substr(0, 4) == "(del")
-	// 	{
-	// 		int id_h = s.find(' ');
-	// 		int id_t = s.find(',', id_h);
-	// 		string id = s.substr(id_h + 1, id_t - id_h - 1);
-	// 		auto itr = vms.find(id);
-	// 		if (itr != vms.end())
-	// 		{
-	// 			cpu_req -= itr->second.first;
-	// 			mem_req -= itr->second.second;
-	// 		}
-	// 	}
-	// 	else if(s.substr(0, 3) == "(vm")
-	// 	{
-	// 		int head = s.find('v');
-	// 		int tail = s.find(',');
+        getline(infile, s);
+        fflush(stdin);
+        int days = stoi(s);
 
-	// 		string id = s.substr(head, tail - head);
-	// 		int cpu_h = s.find(' ');
-	// 		int cpu_t = s.find(',', cpu_h);
-	// 		int cpu = stoi(s.substr(cpu_h + 1, cpu_t - cpu_h - 1));
-	// 		int mem_h = s.find(' ', cpu_t);
-	// 		int mem_t = s.find(',', mem_h);
-	// 		int mem = stoi(s.substr(mem_h + 1, mem_t - mem_h - 1));
-	// 		pair<int, int> value(cpu, mem);
-	// 		cout << id << '\t' << cpu << '\t' << mem << endl;
-	// 		vms.insert(make_pair(id, value));
-	// 	}
-	// }
-	// TODO:read standard input
-	// TODO:process
-	// TODO:write standard output
-	// TODO:fflush(stdout);
+        for (int i = 0; i < days; i++)
+        {
+            /*
+        * at the beginning of one day, first migrate
+        */
+            scheduler.declareANewDay();
+            scheduler.oneDayMigration();
+            // cout << "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
+            getline(infile, s);
+            fflush(stdin);
+            int reqNum = stoi(s);
+            vector<shared_ptr<VirtualMachine>> oneDayAddVM;
+            vector<int> oneDayDelVM;
+            for (int j = 0; j < reqNum; j++)
+            {
+                getline(infile, s);
+                fflush(stdin);
+                if (s.substr(0, 4) == "(add")
+                {
+                    auto newvm = addNewVM(s, oneDayAddVM);
+                    scheduler.addVM_bystep(newvm);
+                    //                newvm->getHost()->checkMyself();
+                }
+                else if (s.substr(0, 4) == "(del")
+                {
+                    // scheduler.clearVmBuffer();
+                    // cout << "del" << endl;
+                    int id_h = s.find(' ');
+                    int id_t = s.find(',', id_h);
+                    int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
+                    oneDayDelVM.push_back(index);
+                    scheduler.deleteVM(index);
+                }
+            }
+            // scheduler.clearVmBuffer();
+            //        scheduler.checkVMS();
+            // scheduler.deleteVM(oneDayDelVM);
+            // scheduler.addVM(oneDayAddVM);
+            // if (i % 100 == 0)
+            // {
+                // cout << i << endl;
+            auto today_purchased_result = scheduler.getNewPurchasedHosts();
+            scheduler.getTodayMigration();
+            scheduler.getTodayAddVMArrangment(oneDayAddVM);
+            // }
+            // exit(0);
+        }
+        // scheduler.checkVMS();
+        // infile.close();
+    }
+    void readFile_test_dp(const string &testName, Scheduler &scheduler)
+    {
+        char cwd[50];
+        getcwd(cwd, 50);
+        string filename(cwd);
+        filename.append("/");
+        filename.append(testName);
+        cout << filename << endl;
+        ifstream infile(filename, ios::in);
+        assert(infile.is_open());
 
+        // auto &infile = cin;
+        string s; //This variable stores the strings parsed every line
+        getline(infile, s);
+        fflush(stdin);
+        int hostsTypeNum = stoi(s);
+        for (int i = 0; i < hostsTypeNum; i++)
+        {
+            getline(infile, s);
+            fflush(stdin);
+            makeNewHost(s);
+        }
 
-	// while()
-	return 0;
-}
+        scheduler.setHostCandidates(hostInfos);
+
+        getline(infile, s);
+        fflush(stdin);
+        int vmTypeNum = stoi(s);
+        for (int i = 0; i < vmTypeNum; i++)
+        {
+            getline(infile, s);
+            fflush(stdin);
+            makeNewVM(s);
+        }
+
+        getline(infile, s);
+        fflush(stdin);
+        int days = stoi(s);
+
+        for (int i = 0; i < days; i++)
+        {
+            /*
+        * at the beginning of one day, first migrate
+        */
+            scheduler.declareANewDay();
+            scheduler.oneDayMigration();
+            // cout << "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
+            getline(infile, s);
+            fflush(stdin);
+            int reqNum = stoi(s);
+            vector<shared_ptr<VirtualMachine>> oneDayAddVM;
+            vector<int> oneDayDelVM;
+            for (int j = 0; j < reqNum; j++)
+            {
+                getline(infile, s);
+                fflush(stdin);
+                if (s.substr(0, 4) == "(add")
+                {
+                    auto newvm = addNewVM(s, oneDayAddVM);
+                    scheduler.addVM_bystep_dp(newvm);
+                    //                newvm->getHost()->checkMyself();
+                }
+                else if (s.substr(0, 4) == "(del")
+                {
+                    scheduler.clearVmBuffer();
+                    // cout << "del" << endl;
+                    int id_h = s.find(' ');
+                    int id_t = s.find(',', id_h);
+                    int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
+                    oneDayDelVM.push_back(index);
+                    scheduler.deleteVM(index);
+                }
+            }
+            scheduler.clearVmBuffer();
+            //        scheduler.checkVMS();
+            // scheduler.deleteVM(oneDayDelVM);
+            // scheduler.addVM(oneDayAddVM);
+            // if (i % 100 == 0)
+            // {
+                // cout << i << endl;
+            // auto today_purchased_result = scheduler.getNewPurchasedHosts();
+            // scheduler.getTodayMigration();
+            // scheduler.getTodayAddVMArrangment(oneDayAddVM);
+            // }
+            // exit(0);
+        }
+        // scheduler.checkVMS();
+        infile.close();
+    }
+
+    int main()
+    {
+     
+        ios::sync_with_stdio(false);
+        clock_t start, end;
+        //定义clock_t变量
+        start = clock();
+        string testDataName = "../training-data/training-6.txt";
+        string testDataName_2 = "../training-data/training-2.txt";
+        //dcout << "Begin to schdule!" << endl;
+        //    ifstream infile(testDataName, ios::in);
+        // return 0;
+        Scheduler scheduler_1;
+        readFile_test_dp(testDataName, scheduler_1);
+        // Scheduler scheduler_2;
+        // readFile(testDataName_2, scheduler_2);
+        cout << "time = " << double(clock() - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
+        // start = clock();
+        // Scheduler scheduler_1dp;
+        // readFile_test_dp(testDataName, scheduler_1dp);
+        // Scheduler scheduler_2dp;
+        // readFile_test_dp(testDataName_2, scheduler_2dp);
+        // cout << "dp time = " << double(clock() - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
+       
+        unsigned long long cost1 = scheduler_1.getCost();
+        // unsigned long long cost2 = scheduler_2.getCost();
+        // cout << "cost1: " << cost1 << endl;
+        // cout << "cost2: " << cost2 << endl;
+        // cout << "sum: " << cost1 + cost2 << endl;
+        // cost1 = scheduler_1dp.getCost();
+        // cost2 = scheduler_2dp.getCost();
+        cout << "dpcost1: " << cost1 << endl;
+        // cout << "dpcost2: " << cost2 << endl;
+        // cout << "dp sum: " << cost1 + cost2 << endl;
+
+        return 0;
+    }
+    int old_main()
+    {
+        // using namespace std;
+        // string testdataname = "../../training-data/training-1.txt";
+        // ifstream infile(testdataname, ios::in);
+
+        // assert(infile.is_open());   //若失�则输出错误消�并终止程序运�unordered_map<string, pair<int, int>> vms;
+        // unsigned long long cpu_req = 0, mem_req = 0;
+        // string s;
+        // int cnt = 0;
+        // while (getline(infile, s))
+        // {
+        // 	if(s[0]!='('){
+        // 		cnt++;
+        // 		if (cnt % 10 == 0)
+        // 			cout << "--day " << cnt << "-- cpu req: " << cpu_req << " mem_req: " << mem_req << endl;
+        // 	}else if(s.substr(0, 4) == "(add")
+        // 	{
+        // 		int id_h = s.find(' ');
+        // 		int id_t = s.find(',', id_h);
+        // 		string id = s.substr(id_h + 1, id_t - id_h - 1);
+        // 		auto itr = vms.find(id);
+        // 		if (itr != vms.end())
+        // 		{
+        // 			cpu_req += itr->second.first;
+        // 			mem_req += itr->second.second;
+        // 		}
+        // 	}
+        // 	else if (s.substr(0, 4) == "(del")
+        // 	{
+        // 		int id_h = s.find(' ');
+        // 		int id_t = s.find(',', id_h);
+        // 		string id = s.substr(id_h + 1, id_t - id_h - 1);
+        // 		auto itr = vms.find(id);
+        // 		if (itr != vms.end())
+        // 		{
+        // 			cpu_req -= itr->second.first;
+        // 			mem_req -= itr->second.second;
+        // 		}
+        // 	}
+        // 	else if(s.substr(0, 3) == "(vm")
+        // 	{
+        // 		int head = s.find('v');
+        // 		int tail = s.find(',');
+
+        // 		string id = s.substr(head, tail - head);
+        // 		int cpu_h = s.find(' ');
+        // 		int cpu_t = s.find(',', cpu_h);
+        // 		int cpu = stoi(s.substr(cpu_h + 1, cpu_t - cpu_h - 1));
+        // 		int mem_h = s.find(' ', cpu_t);
+        // 		int mem_t = s.find(',', mem_h);
+        // 		int mem = stoi(s.substr(mem_h + 1, mem_t - mem_h - 1));
+        // 		pair<int, int> value(cpu, mem);
+        // 		cout << id << '\t' << cpu << '\t' << mem << endl;
+        // 		vms.insert(make_pair(id, value));
+        // 	}
+        // }
+        // TODO:read standard input
+        // TODO:process
+        // TODO:write standard output
+        // TODO:fflush(stdout);
+
+        // while()
+        return 0;
+    }

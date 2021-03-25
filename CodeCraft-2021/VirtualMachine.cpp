@@ -7,7 +7,9 @@ VirtualMachine::VirtualMachine(string &type, int num_of_cpu, int size_of_mem, bo
     : m_type(type),
       m_num_of_cpu(num_of_cpu), m_size_of_mem(size_of_mem),
       m_index(index),
-      _host(nullptr)
+      _host(nullptr),
+      cpu(num_of_cpu),
+      mem(size_of_mem)
 {
     if (is_double_node)
         m_is_double_node = 0;

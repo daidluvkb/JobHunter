@@ -7,11 +7,31 @@
 #include "utils.h"
 
 #include <sstream>
-
+#include "Dp.h"
 using namespace std;
 class Scheduler
 {
+    unsigned int countFreeVolumn() const;
+
+public:
+    void histVmProbability(const unordered_map<string, VMInfo> &vms);
+    void clearVmBuffer();
 private:
+
+    int low_pro_sup, low_pro_floor;
+    vector<shared_ptr<VirtualMachine>> _vm_buffer;
+    
+    vector<vector<int>> dp_recurse(vector<int> index_vec, const vector<shared_ptr<VirtualMachine>> &vms);
+    void buyHostsFor_dp(vector<shared_ptr<VirtualMachine>> &vms);
+    shared_ptr<const HostInfo> chooseAHost(const vector<shared_ptr<VirtualMachine>> &vms);
+    unordered_map<int, vector<int>> buyHostsfor(vector<shared_ptr<VirtualMachine>> vms);
+
+public:
+
+    void batchAddDoubleVmFinished();
+
+private:
+
     unsigned long long cost;
     int _host_num_lastday;
     int getTodayDailyCost();
@@ -25,14 +45,19 @@ private:
 private:
     vector<HostInfo> _host_candidates;
     unordered_map<int, shared_ptr<VirtualMachine>> _vms;
+
+    vector<shared_ptr<VirtualMachine>> _vms_vec;//记录vm顺序，便于满足oj顺序处理要求
+
     vector<shared_ptr<Host>> _free_host;
     vector<shared_ptr<Host>> _busy_host;
     vector<shared_ptr<Host>> _hosts;
     int _host_cheapest;
     int _today_add_arrangement_num;
+    double _probability;
 private:
     /* method */
     void addVM(shared_ptr<VirtualMachine>& vm);
+    void addVM_dp(shared_ptr<VirtualMachine>& vm);
     void addVM_opt(shared_ptr<VirtualMachine>& vm);
     void sumRequest(int &cpu, int &mem, const vector<shared_ptr<VirtualMachine>> &request);
 
@@ -50,8 +75,10 @@ public:
     void setHostCandidates(unordered_map<string, HostInfo> &hostInfos);
     void deleteVM(vector<int> &ptr);
     void deleteVM(const int id);
+    void deleteVM_diff(const int id, bool is_double);
     void addVM(vector<shared_ptr<VirtualMachine>> &ptr);
     void addVM_bystep(shared_ptr<VirtualMachine> &vm);
+    void addVM_bystep_dp(shared_ptr<VirtualMachine> &vm);
     void addVM_opt(vector<shared_ptr<VirtualMachine>> &vms);
    
     void shutHost(shared_ptr<Host> &host);

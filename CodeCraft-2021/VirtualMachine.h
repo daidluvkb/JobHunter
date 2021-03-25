@@ -19,6 +19,8 @@ private:
 
 public:
     //        VirtualMachine();
+    const int cpu;
+    const int mem;
     VirtualMachine(string &type, int num_of_cpu, int size_of_mem, bool is_double_node, int index);
     int getId();
     int getNumOfCpu();
