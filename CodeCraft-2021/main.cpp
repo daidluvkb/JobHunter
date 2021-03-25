@@ -159,16 +159,16 @@ void readFile_testdiff(const string &testName, Scheduler &scheduler, bool is_dou
 }
     void readFile(const string &testName, Scheduler &scheduler)
     {
-        // char cwd[50];
-        // getcwd(cwd, 50);
-        // string filename(cwd);
-        // filename.append("/");
-        // filename.append(testName);
-        // cout << filename << endl;
-        // ifstream infile(filename, ios::in);
-        // assert(infile.is_open());
+        char cwd[50];
+        getcwd(cwd, 50);
+        string filename(cwd);
+        filename.append("/");
+        filename.append(testName);
+        cout << filename << endl;
+        ifstream infile(filename, ios::in);
+        assert(infile.is_open());
 
-        auto &infile = cin;
+        // auto &infile = cin;
         string s; //This variable stores the strings parsed every line
         getline(infile, s);
         fflush(stdin);
@@ -237,14 +237,14 @@ void readFile_testdiff(const string &testName, Scheduler &scheduler, bool is_dou
             // if (i % 100 == 0)
             // {
                 // cout << i << endl;
-            auto today_purchased_result = scheduler.getNewPurchasedHosts();
-            scheduler.getTodayMigration();
-            scheduler.getTodayAddVMArrangment(oneDayAddVM);
+            // auto today_purchased_result = scheduler.getNewPurchasedHosts();
+            // scheduler.getTodayMigration();
+            // scheduler.getTodayAddVMArrangment(oneDayAddVM);
             // }
             // exit(0);
         }
         // scheduler.checkVMS();
-        // infile.close();
+        infile.close();
     }
     void readFile_test_dp(const string &testName, Scheduler &scheduler)
     {
@@ -350,26 +350,26 @@ void readFile_testdiff(const string &testName, Scheduler &scheduler, bool is_dou
         // return 0;
         Scheduler scheduler_1;
         readFile_test_dp(testDataName, scheduler_1);
-        // Scheduler scheduler_2;
-        // readFile(testDataName_2, scheduler_2);
+        Scheduler scheduler_2;
+        readFile(testDataName_2, scheduler_2);
         cout << "time = " << double(clock() - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
-        // start = clock();
-        // Scheduler scheduler_1dp;
-        // readFile_test_dp(testDataName, scheduler_1dp);
-        // Scheduler scheduler_2dp;
-        // readFile_test_dp(testDataName_2, scheduler_2dp);
-        // cout << "dp time = " << double(clock() - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
+        start = clock();
+        Scheduler scheduler_1dp;
+        readFile_test_dp(testDataName, scheduler_1dp);
+        Scheduler scheduler_2dp;
+        readFile_test_dp(testDataName_2, scheduler_2dp);
+        cout << "dp time = " << double(clock() - start) / CLOCKS_PER_SEC << "s" << endl; //输出时间（单位：ｓ）
        
         unsigned long long cost1 = scheduler_1.getCost();
-        // unsigned long long cost2 = scheduler_2.getCost();
-        // cout << "cost1: " << cost1 << endl;
-        // cout << "cost2: " << cost2 << endl;
-        // cout << "sum: " << cost1 + cost2 << endl;
-        // cost1 = scheduler_1dp.getCost();
-        // cost2 = scheduler_2dp.getCost();
+        unsigned long long cost2 = scheduler_2.getCost();
+        cout << "cost1: " << cost1 << endl;
+        cout << "cost2: " << cost2 << endl;
+        cout << "sum: " << cost1 + cost2 << endl;
+        cost1 = scheduler_1dp.getCost();
+        cost2 = scheduler_2dp.getCost();
         cout << "dpcost1: " << cost1 << endl;
-        // cout << "dpcost2: " << cost2 << endl;
-        // cout << "dp sum: " << cost1 + cost2 << endl;
+        cout << "dpcost2: " << cost2 << endl;
+        cout << "dp sum: " << cost1 + cost2 << endl;
 
         return 0;
     }

@@ -25,7 +25,9 @@ private:
     void buyHostsFor_dp(vector<shared_ptr<VirtualMachine>> &vms);
     shared_ptr<const HostInfo> chooseAHost(const vector<shared_ptr<VirtualMachine>> &vms);
     unordered_map<int, vector<int>> buyHostsfor(vector<shared_ptr<VirtualMachine>> vms);
-
+    shared_ptr<vector<vector<int>>> buyHostsfor_(vector<shared_ptr<VirtualMachine>> vms);
+    shared_ptr<vector<vector<int>>> buyHostsfor_itr(vector<shared_ptr<VirtualMachine>> vms);
+    
 public:
 
     void batchAddDoubleVmFinished();

@@ -288,9 +288,10 @@ bool Host::addVMs(vector<shared_ptr<VirtualMachine>>& vms)
 {
     int &cpuA = _left_cpu_A, &memA = _left_mem_A;
     int &cpuB = _left_cpu_B, &memB = _left_mem_B;
-    _vms.reserve(vms.size());
-    _vms.rehash(vms.size());
-    for (size_t i = 0; i < vms.size(); i++)
+    const int vmssize = vms.size();
+    _vms.reserve(vms.size()+_vms.size());
+    _vms.rehash(vmssize+_vms.size());
+    for (size_t i = 0; i < vmssize; i++)
     {
         // cout << vms[i]->getId()<< endl;
         int id = vms[i]->getId();
@@ -322,7 +323,8 @@ bool Host::addVMs(vector<shared_ptr<VirtualMachine>>& vms)
                 memB -= mem;
             }
         }
-    }   
+    } 
+    return true;  
 }
 
 bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
