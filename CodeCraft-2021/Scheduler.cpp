@@ -734,6 +734,7 @@ void Scheduler::oneDayMigration() {
     _migrate_list = _busy_host;
 //    cout << "_host:" << _hosts.size() << " free:" << _free_host.size() << " busy:" << _busy_host.size() << " migrate:" << _migrate_list.size() << endl;
     std::sort(_migrate_list.begin(), _migrate_list.end(), cmp);
+    int cnt = 0;
     for(auto itr = _migrate_list.begin(); itr != _migrate_list.end(); ){
 //        cout << (*itr)->getType() << endl;
         shared_ptr<Host> freeHost((*itr));
@@ -743,8 +744,13 @@ void Scheduler::oneDayMigration() {
 //            cout <<"free the host :"<< (*itr)->getIndex()<< " type:" << (*itr)->getType() << endl;
 //            continue;
         }else{
+            
             itr++;
-            break;
+            cnt++;
+            if(cnt == 500){
+                break;
+            }
+            // break;
         }
 //        break;
     }
@@ -763,7 +769,10 @@ int Scheduler::get_migrateVMNumPerDay() const {
 }
 
 bool Scheduler::cmp(shared_ptr<Host> & a, shared_ptr<Host> & b) {
-    return (a->getAvailableCpuA() + a->getAvailableCpuB()) > (b->getAvailableCpuA() + b->getAvailableCpuB());
+    // return (a->getAvailableCpuA() + a->getAvailableCpuB()) > (b->getAvailableCpuA() + b->getAvailableCpuB());
+    return (a->getAvailableCpuA() + a->getAvailableCpuB() + 0.2*(a->getAvailableMemA()+a->getAvailableMemB()) + 0.2 * a->getCostPerDay())>
+            (b->getAvailableCpuA() + b->getAvailableCpuB() + 0.2*(b->getAvailableMemA()+b->getAvailableMemB()) + 0.2 * b->getCostPerDay());
+            
 }
 
 void Scheduler::printMigrateInfo() {
