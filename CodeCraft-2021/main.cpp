@@ -164,7 +164,96 @@ void readFile(const string &testName, Scheduler &scheduler)
     }
     // scheduler.checkVMS();
 }
+void readFile_test_dp(const string &testName, Scheduler &scheduler)
+    {
+        // char cwd[50];
+        // getcwd(cwd, 50);
+        // string filename(cwd);
+        // filename.append("/");
+        // filename.append(testName);
+        // cout << filename << endl;
+        // ifstream infile(filename, ios::in);
+        // assert(infile.is_open());
 
+        auto &infile = cin;
+        string s; //This variable stores the strings parsed every line
+        getline(infile, s);
+        fflush(stdin);
+        int hostsTypeNum = stoi(s);
+        for (int i = 0; i < hostsTypeNum; i++)
+        {
+            getline(infile, s);
+            fflush(stdin);
+            makeNewHost(s);
+        }
+
+        scheduler.setHostCandidates(hostInfos);
+
+        getline(infile, s);
+        fflush(stdin);
+        int vmTypeNum = stoi(s);
+        for (int i = 0; i < vmTypeNum; i++)
+        {
+            getline(infile, s);
+            fflush(stdin);
+            makeNewVM(s);
+        }
+
+        getline(infile, s);
+        fflush(stdin);
+        int days = stoi(s);
+
+        for (int i = 0; i < days; i++)
+        {
+            /*
+        * at the beginning of one day, first migrate
+        */
+            scheduler.declareANewDay();
+            scheduler.oneDayMigration();
+            // cout << "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
+            getline(infile, s);
+            fflush(stdin);
+            int reqNum = stoi(s);
+            vector<shared_ptr<VirtualMachine>> oneDayAddVM;
+            vector<int> oneDayDelVM;
+            for (int j = 0; j < reqNum; j++)
+            {
+                getline(infile, s);
+                fflush(stdin);
+                if (s.substr(0, 4) == "(add")
+                {
+                    auto newvm = addNewVM(s, oneDayAddVM);
+                    scheduler.addVM_bystep_dp(newvm);
+                    //                newvm->getHost()->checkMyself();
+                }
+                else if (s.substr(0, 4) == "(del")
+                {
+                    scheduler.clearVmBuffer();
+                    // cout << "del" << endl;
+                    int id_h = s.find(' ');
+                    int id_t = s.find(',', id_h);
+                    int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
+                    oneDayDelVM.push_back(index);
+                    scheduler.deleteVM(index);
+                }
+            }
+            scheduler.clearVmBuffer();
+            //        scheduler.checkVMS();
+            // scheduler.deleteVM(oneDayDelVM);
+            // scheduler.addVM(oneDayAddVM);
+            // if (i % 100 == 0)
+            // {
+                // cout << i << endl;
+            auto today_purchased_result = scheduler.getNewPurchasedHosts();
+            scheduler.getTodayMigration();
+            scheduler.getTodayAddVMArrangment(oneDayAddVM);
+           
+            // }
+            // exit(0);
+        }
+        // scheduler.checkVMS();
+        // infile.close();
+    }
 int main()
 {
     ios::sync_with_stdio(false);
@@ -177,7 +266,7 @@ int main()
 //    ifstream infile(testDataName, ios::in);
     // return 0;
     Scheduler scheduler;
-    readFile(testDataName, scheduler);
+    readFile_test_dp(testDataName, scheduler);
 //    Scheduler scheduler_2;
 //    readFile(testDataName_2, scheduler_2);
 //     readOj(scheduler);

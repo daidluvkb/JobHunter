@@ -125,6 +125,61 @@ void Host::getAbnormalCapcityAfterAdd(const shared_ptr<VirtualMachine> &vm, int 
     // {
     // }
 }
+bool Host::addVMs(vector<shared_ptr<VirtualMachine>>& vms) 
+{
+    int &cpuA = _left_cpu_A, &memA = _left_mem_A;
+    int &cpuB = _left_cpu_B, &memB = _left_mem_B;
+    const int vmssize = vms.size();
+    _vms.reserve(vms.size()+_vms.size());
+    // _vms.rehash(vmssize+_vms.size());
+    for (size_t i = 0; i < vmssize; i++)
+    {
+        // cout << vms[i]->getId()<< endl;
+        int id = vms[i]->getId();
+        shared_ptr<VirtualMachine> vm = vms[i];
+        _vms[id] = vm;
+        
+        const int cpu = vm->cpu;
+        const int mem = vm->mem;        
+        bool is_double = vm->IsDoubleNode() == 0;
+        if (is_double)
+        {
+            cpuA -= cpu / 2;
+            cpuB -= cpu / 2;
+            memA -= mem / 2;
+            memB -= mem / 2;
+        }
+        else
+        {
+            if (abs(cpuA - cpu - cpuB) + abs(memA - mem - memB) <= abs(cpuB - cpu - cpuA) + abs(memB - mem - memA) )
+            {
+                vm->setNode(true);
+                cpuA -= cpu;
+                memA -= mem;
+            }
+            else
+            {
+                vm->setNode(false);
+                cpuB -= cpu;
+                memB -= mem;
+            }
+        }
+    } 
+    return true;  
+}
+void Host::getAbnormalCapcity(int &small, int &large) const
+{
+    int tmpdata[4] = {_left_cpu_A, _left_cpu_B, _left_mem_A, _left_mem_B};
+    small = tmpdata[0];
+    for (size_t i = 1; i < 4; i++)
+    {
+        small = min(small, tmpdata[i]);
+    }
+    large = small == tmpdata[0] ? tmpdata[2] : large;
+    large = small == tmpdata[2] ? tmpdata[0] : large;
+    large = small == tmpdata[1] ? tmpdata[3] : large;
+    large = small == tmpdata[3] ? tmpdata[1] : large;
+}
 
 int Host::getNumOfCpu()
 {
@@ -529,3 +584,33 @@ unordered_map<int, shared_ptr<VirtualMachine>> & Host::get_vms(){
 //         break;
 //     }
 // }
+bool Host::isAbleToAddVM(shared_ptr<VirtualMachine> &vm) 
+{
+    bool success = false;
+    if (vm->IsDoubleNode() == 0)
+    {
+        if (getAvailableCpu(true) >= (vm->cpu / 2) &&
+            getAvailableMem(true) >= (vm->mem / 2))
+        {
+            success = true;
+        }
+    }
+    else
+    {
+        int mem = vm->mem, cpu = vm->cpu;
+        bool A = false, B = false;
+        if (_left_cpu_A >= cpu && _left_mem_A >= mem)
+        {
+            A = true;
+        }
+        if (_left_cpu_B >= cpu && _left_mem_B >= mem)
+        {
+            B = true;
+        }
+        if (A || B)
+        {
+            success = true;
+        }
+    }
+    return success;
+}

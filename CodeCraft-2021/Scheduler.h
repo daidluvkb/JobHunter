@@ -34,6 +34,7 @@ private:
     /* method */
     void addVM(shared_ptr<VirtualMachine>& vm);
     void addVM_opt(shared_ptr<VirtualMachine>& vm);
+    
     void sumRequest(int &cpu, int &mem, const vector<shared_ptr<VirtualMachine>> &request);
 
 private:
@@ -43,23 +44,29 @@ private:
     shared_ptr<Host> _buyAHost_immedidate(const HostInfo& host);
     void _buyAHost_opt(const HostInfo& host);
     void _addHostToFree(shared_ptr<Host>& host);
+    vector<shared_ptr<VirtualMachine>> _vm_buffer;
     
 public:
     Scheduler(/* args */);
-    ~Scheduler();
+    ~Scheduler(); 
     void setHostCandidates(unordered_map<string, HostInfo> &hostInfos);
     void deleteVM(vector<int> &ptr);
     void deleteVM(const int id);
     void addVM(vector<shared_ptr<VirtualMachine>> &ptr);
     void addVM_bystep(shared_ptr<VirtualMachine> &vm);
+    void addVM_bystep_dp(shared_ptr<VirtualMachine> &vm);
+    void addVM_dp(shared_ptr<VirtualMachine>& vm);
+    void clearVmBuffer();
+    shared_ptr<vector<vector<int>>> buyHostsfor_itr(vector<shared_ptr<VirtualMachine>> vms);
     void addVM_opt(vector<shared_ptr<VirtualMachine>> &vms);
-   
+
     void shutHost(shared_ptr<Host> &host);
     void buyHosts(int cpu, int mem);
     void declareANewDay();
     int getTodayAddVMArrangment(vector<shared_ptr<VirtualMachine>>&vms);
     vector<shared_ptr<const HostInfo>> getNewPurchasedHosts(); // get purchased hosts every day
 
+    shared_ptr<const HostInfo> chooseAHost(const vector<shared_ptr<VirtualMachine>> &vms);
     shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
     shared_ptr<const HostInfo> chooseAHost_(const int cpu, const int mem);
     shared_ptr<const HostInfo> chooseAHost_opt2(const int cpu, const int mem);

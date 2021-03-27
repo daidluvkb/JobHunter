@@ -6,6 +6,7 @@
 #include "VirtualMachine.h"
 #include "math.h"
 #include "utils.h"
+#include <vector>
 using namespace std;
 
 class Host{
@@ -22,6 +23,8 @@ class Host{
         int _left_mem_A;
         int _left_mem_B;
     public:
+    bool isAbleToAddVM(shared_ptr<VirtualMachine>& vm);
+        
         string getType() const { return m_type; }
         bool checkMyself() const;
         Host(const string &type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday, int index);
@@ -29,6 +32,8 @@ class Host{
         int getSmallestCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm) const;
         int getLargestCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm) const;
         void getAbnormalCapcityAfterAdd(const shared_ptr<VirtualMachine> &vm, int &small, int &large) const;
+        void getAbnormalCapcity(int &small, int &large) const;
+        
         void setIndex(const int index) { m_index = index; }
         int getNumOfCpu();
         int getSizeOfMem();
@@ -37,6 +42,7 @@ class Host{
         unordered_map<int, shared_ptr<VirtualMachine>>& get_vms();
         void deleteVM(int id);
         int getIndex();
+        bool addVMs(vector<shared_ptr<VirtualMachine>>& vms) ;
         bool addVM(shared_ptr<VirtualMachine>& vm);
         bool addVM_try(shared_ptr<VirtualMachine>& vm);
         bool addVM_try_migrate(shared_ptr<VirtualMachine>& vm);
