@@ -194,20 +194,22 @@ int Host::getCostPerDay(){
 
 void Host::deleteVM(int id){
     if(!_vms.count(id)) return;
-
-    if(_vms[id]->IsDoubleNode() == 0){
-        _left_cpu_A += (_vms[id]->cpu / 2);
-        _left_cpu_B += (_vms[id]->cpu / 2);
-        _left_mem_A += (_vms[id]->mem / 2);
-        _left_mem_B += (_vms[id]->mem / 2);
+    const int cpu = _vms[id]->cpu;
+    const int mem = _vms[id]->mem;
+    int node = _vms[id]->IsDoubleNode();
+    if(node == 0){
+        _left_cpu_A += (cpu / 2);
+        _left_cpu_B += (cpu / 2);
+        _left_mem_A += (mem / 2);
+        _left_mem_B += (mem / 2);
     }
-    else if(_vms[id]->IsDoubleNode() == 1){
-        _left_cpu_A += _vms[id]->cpu;
-        _left_mem_A += _vms[id]->mem;
+    else if(node == 1){
+        _left_cpu_A += cpu;
+        _left_mem_A += mem;
     }
-    else if(_vms[id]->IsDoubleNode() == 2){
-        _left_cpu_B += _vms[id]->cpu;
-        _left_mem_B += _vms[id]->mem;
+    else if(node == 2){
+        _left_cpu_B += cpu;
+        _left_mem_B += mem;
     }
 
     _vms.erase(id);
@@ -290,7 +292,7 @@ bool Host::addVMs(vector<shared_ptr<VirtualMachine>>& vms)
     int &cpuB = _left_cpu_B, &memB = _left_mem_B;
     const int vmssize = vms.size();
     _vms.reserve(vms.size()+_vms.size());
-    _vms.rehash(vmssize+_vms.size());
+    // _vms.rehash(vmssize+_vms.size());
     for (size_t i = 0; i < vmssize; i++)
     {
         // cout << vms[i]->getId()<< endl;

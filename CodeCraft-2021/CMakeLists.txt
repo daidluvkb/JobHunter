@@ -18,7 +18,7 @@ if (CMAKE_BUILD_TYPE STREQUAL debug)
     add_definitions(-D_DEBUG)
 endif ()
 
-SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O3 -Wall -g -ggdb -std=c++11")
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb -std=c++11")
 SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall -std=c++11")
 
 # 查找当前目录下的所有源文件
