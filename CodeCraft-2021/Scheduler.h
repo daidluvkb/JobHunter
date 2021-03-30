@@ -18,7 +18,7 @@ private:
     void recordPurchasedHost(const HostInfo& host);
 private:
     /* data */
-
+    bool isMigrationOver5_1000() const;
     stringstream _today_add_arrangement;
     unordered_map<string, int> _today_purchased_hosts;//host type/name and cnt;
     vector<string> _today_purchased_hosts_vec;//host ;
@@ -85,7 +85,7 @@ private:
     stringstream _todayMigrationInfo;
 public:
     void getTodayMigration();
-    void freeHost(shared_ptr<Host>& host);
+    bool freeHost(shared_ptr<Host>& host);
     int get_migrateVMNumPerDay() const;
     static bool cmp(shared_ptr<Host>&, shared_ptr<Host> &);
     void oneDayMigration();

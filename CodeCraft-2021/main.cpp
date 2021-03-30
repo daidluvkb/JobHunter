@@ -72,7 +72,7 @@ shared_ptr<VirtualMachine> addNewVM(string & s, vector<shared_ptr<VirtualMachine
     int index = stoi(s.substr(index_h + 1, index_t - index_h - 1));
     VMInfo itr = vmInfos.find(id)->second;
     shared_ptr<VirtualMachine> ptr(make_shared<VirtualMachine>(id, itr.cpu, itr.mem, itr.isDouble, index));
-    oneDayVM.push_back(ptr);
+    oneDayVM.emplace_back(ptr);
     return ptr;
 }
 
@@ -178,29 +178,29 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
         auto &infile = cin;
         string s; //This variable stores the strings parsed every line
         getline(infile, s);
-        fflush(stdin);
+        // fflush(stdin);
         int hostsTypeNum = stoi(s);
         for (int i = 0; i < hostsTypeNum; i++)
         {
             getline(infile, s);
-            fflush(stdin);
+            // fflush(stdin);
             makeNewHost(s);
         }
 
         scheduler.setHostCandidates(hostInfos);
 
         getline(infile, s);
-        fflush(stdin);
+        // fflush(stdin);
         int vmTypeNum = stoi(s);
         for (int i = 0; i < vmTypeNum; i++)
         {
             getline(infile, s);
-            fflush(stdin);
+            // fflush(stdin);
             makeNewVM(s);
         }
 
         getline(infile, s);
-        fflush(stdin);
+        // fflush(stdin);
         int days = stoi(s);
 
         for (int i = 0; i < days; i++)
@@ -212,28 +212,27 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
             scheduler.oneDayMigration();
             // cout << "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
             getline(infile, s);
-            fflush(stdin);
+            // fflush(stdin);
             int reqNum = stoi(s);
             vector<shared_ptr<VirtualMachine>> oneDayAddVM;
             vector<int> oneDayDelVM;
             for (int j = 0; j < reqNum; j++)
             {
                 getline(infile, s);
-                fflush(stdin);
-                if (s.substr(0, 4) == "(add")
+                // fflush(stdin);
+                if (s[1] == 'a')
                 {
                     auto newvm = addNewVM(s, oneDayAddVM);
                     scheduler.addVM_bystep_dp(newvm);
                     //                newvm->getHost()->checkMyself();
                 }
-                else if (s.substr(0, 4) == "(del")
+                else if (s[1] == 'd')
                 {
                     scheduler.clearVmBuffer();
                     // cout << "del" << endl;
                     int id_h = s.find(' ');
                     int id_t = s.find(',', id_h);
                     int index = stoi(s.substr(id_h + 1, id_t - id_h - 1));
-                    oneDayDelVM.push_back(index);
                     scheduler.deleteVM(index);
                 }
             }

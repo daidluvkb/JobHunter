@@ -262,52 +262,25 @@ bool Host::addVM(shared_ptr<VirtualMachine>& vm){
 bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
 {
     bool success = false;
+    const int cpu = vm->cpu; const int mem = vm->mem;
     if (vm->IsDoubleNode() == 0)
     {
         // cout << "vm: " << vm->getNumOfCpu() << '\t' << vm->getSizeOfMem()<< endl;
         // print();
-        if (getAvailableCpu(true) >= (vm->getNumOfCpu() / 2) &&
-            getAvailableMem(true) >= (vm->getSizeOfMem() / 2))
+        if (getAvailableCpu(true) >= (cpu / 2) &&
+            getAvailableMem(true) >= (mem / 2))
         {
             /* code */
-            _left_cpu_A -= (vm->getNumOfCpu() / 2);
-            _left_cpu_B -= (vm->getNumOfCpu() / 2);
-            _left_mem_A -= (vm->getSizeOfMem() / 2);
-            _left_mem_B -= (vm->getSizeOfMem() / 2);
+            _left_cpu_A -= (cpu / 2);
+            _left_cpu_B -= (cpu / 2);
+            _left_mem_A -= (mem / 2);
+            _left_mem_B -= (mem / 2);
             // print();
             success = true;
         }
     }
     else
     {
-        // if (getAvailableCpu(false) >= vm->getNumOfCpu() &&
-        //     getAvailableMem(false) >= vm->getSizeOfMem())
-        // {
-        //     if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
-        //     {
-        //         vm->setNode(true);
-        //         _left_cpu_A -= vm->getNumOfCpu();
-        //         _left_mem_A -= vm->getSizeOfMem();
-        //         if (_left_cpu_A < 0 || _left_mem_A < 0)
-        //             cout << "overflow\n";
-        //         success = true;
-        //     }
-
-        //     else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
-        //     {
-        //         vm->setNode(false);
-        //         _left_cpu_B -= vm->getNumOfCpu();
-        //         _left_mem_B -= vm->getSizeOfMem();
-        //         if (_left_cpu_B < 0 || _left_mem_B < 0)
-        //             cout << "overflow\n";
-        //         success = true;
-        //     }
-        //     else 
-        //     {
-        //         // cout << "else" << endl;
-        //     }
-        // }
-        int mem = vm->getSizeOfMem(), cpu = vm->getNumOfCpu();
         bool A = false, B = false;
         if (_left_cpu_A >= cpu && _left_mem_A >= mem)
         {
@@ -323,14 +296,14 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
             if (_left_cpu_A >= _left_cpu_B)
             {
                 vm->setNode(true);
-                _left_cpu_A -= vm->getNumOfCpu();
-                _left_mem_A -= vm->getSizeOfMem();
+                _left_cpu_A -= cpu;
+                _left_mem_A -= mem;
             }
             else
             {
                 vm->setNode(false);
-                _left_cpu_B -= vm->getNumOfCpu();
-                _left_mem_B -= vm->getSizeOfMem();
+                _left_cpu_B -= cpu;
+                _left_mem_B -= mem;
             }
         }
         else if (!A && !B)
@@ -340,16 +313,16 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
         else if (!A)
         {
             vm->setNode(false);
-            _left_cpu_B -= vm->getNumOfCpu();
-            _left_mem_B -= vm->getSizeOfMem();
+            _left_cpu_B -= cpu;
+            _left_mem_B -= mem;
             if (_left_cpu_B < 0 || _left_mem_B < 0)
                 dcout << "overflow\n";
         }
         else
         {
             vm->setNode(true);
-            _left_cpu_A -= vm->getNumOfCpu();
-            _left_mem_A -= vm->getSizeOfMem();
+            _left_cpu_A -= cpu;
+            _left_mem_A -= mem;
             if (_left_cpu_A < 0 || _left_mem_A < 0)
                 dcout << "overflow\n";
         }
@@ -362,53 +335,27 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
 bool Host::addVM_try_migrate(shared_ptr<VirtualMachine> &vm)
 {
     bool success = false;
+    int mem = vm->mem, cpu = vm->cpu;
     if (vm->IsDoubleNode() == 0)
     {
-        // cout << "vm: " << vm->getNumOfCpu() << '\t' << vm->getSizeOfMem()<< endl;
+        // cout << "vm: " << cpu << '\t' << mem<< endl;
         // print();
-        if (getAvailableCpu(true) >= (vm->getNumOfCpu() / 2) &&
-            getAvailableMem(true) >= (vm->getSizeOfMem() / 2))
+        if (getAvailableCpu(true) >= (cpu / 2) &&
+            getAvailableMem(true) >= (mem / 2))
         {
             /* code */
             vm->getHost()->deleteVM(vm->getId());
-            _left_cpu_A -= (vm->getNumOfCpu() / 2);
-            _left_cpu_B -= (vm->getNumOfCpu() / 2);
-            _left_mem_A -= (vm->getSizeOfMem() / 2);
-            _left_mem_B -= (vm->getSizeOfMem() / 2);
+            _left_cpu_A -= (cpu / 2);
+            _left_cpu_B -= (cpu / 2);
+            _left_mem_A -= (mem / 2);
+            _left_mem_B -= (mem / 2);
             // print();
             success = true;
         }
     }
     else
     {
-        // if (getAvailableCpu(false) >= vm->getNumOfCpu() &&
-        //     getAvailableMem(false) >= vm->getSizeOfMem())
-        // {
-        //     if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
-        //     {
-        //         vm->setNode(true);
-        //         _left_cpu_A -= vm->getNumOfCpu();
-        //         _left_mem_A -= vm->getSizeOfMem();
-        //         if (_left_cpu_A < 0 || _left_mem_A < 0)
-        //             cout << "overflow\n";
-        //         success = true;
-        //     }
-
-        //     else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
-        //     {
-        //         vm->setNode(false);
-        //         _left_cpu_B -= vm->getNumOfCpu();
-        //         _left_mem_B -= vm->getSizeOfMem();
-        //         if (_left_cpu_B < 0 || _left_mem_B < 0)
-        //             cout << "overflow\n";
-        //         success = true;
-        //     }
-        //     else
-        //     {
-        //         // cout << "else" << endl;
-        //     }
-        // }
-        int mem = vm->getSizeOfMem(), cpu = vm->getNumOfCpu();
+    
         bool A = false, B = false;
         if (_left_cpu_A >= cpu && _left_mem_A >= mem)
         {
@@ -425,14 +372,14 @@ bool Host::addVM_try_migrate(shared_ptr<VirtualMachine> &vm)
             if (_left_cpu_A >= _left_cpu_B)
             {
                 vm->setNode(true);
-                _left_cpu_A -= vm->getNumOfCpu();
-                _left_mem_A -= vm->getSizeOfMem();
+                _left_cpu_A -= cpu;
+                _left_mem_A -= mem;
             }
             else
             {
                 vm->setNode(false);
-                _left_cpu_B -= vm->getNumOfCpu();
-                _left_mem_B -= vm->getSizeOfMem();
+                _left_cpu_B -= cpu;
+                _left_mem_B -= mem;
             }
         }
         else if (!A && !B)
@@ -443,19 +390,19 @@ bool Host::addVM_try_migrate(shared_ptr<VirtualMachine> &vm)
         {
             vm->getHost()->deleteVM(vm->getId());
             vm->setNode(false);
-            _left_cpu_B -= vm->getNumOfCpu();
-            _left_mem_B -= vm->getSizeOfMem();
-            if (_left_cpu_B < 0 || _left_mem_B < 0)
-                dcout << "overflow\n";
+            _left_cpu_B -= cpu;
+            _left_mem_B -= mem;
+            // if (_left_cpu_B < 0 || _left_mem_B < 0)
+            //     dcout << "overflow\n";
         }
         else
         {
             vm->getHost()->deleteVM(vm->getId());
             vm->setNode(true);
-            _left_cpu_A -= vm->getNumOfCpu();
-            _left_mem_A -= vm->getSizeOfMem();
-            if (_left_cpu_A < 0 || _left_mem_A < 0)
-                dcout << "overflow\n";
+            _left_cpu_A -= cpu;
+            _left_mem_A -= mem;
+            // if (_left_cpu_A < 0 || _left_mem_A < 0)
+            //     dcout << "overflow\n";
         }
     }
     if (success)

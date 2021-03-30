@@ -14,13 +14,13 @@ private:
     const int m_num_of_cpu;
     const int m_size_of_mem;
     int m_is_double_node; //�，A1，B2，未部署单节�1
-    const int m_index;
     shared_ptr<Host> _host;
 
 public:
     //        VirtualMachine();
     const int cpu;
     const int mem;
+    const int m_index;
     VirtualMachine(string &type, int num_of_cpu, int size_of_mem, bool is_double_node, int index);
     int getId();
     int getNumOfCpu();
