@@ -333,6 +333,7 @@ void Scheduler::addVM_dp(shared_ptr<VirtualMachine>& vm)
             {
                 continue;
             }
+            
             _busy_host[i]->addVM_try(vm);
             vm->setHost(_busy_host[i]);
             return;
@@ -360,7 +361,7 @@ shared_ptr<vector<vector<int>>> Scheduler::buyHostsfor_itr(vector<shared_ptr<Vir
     if (vms.empty())
         return res;
 
-    shared_ptr<const HostInfo> host_1 = chooseAHost(vms[0]->cpu, vms[0]->mem);
+    shared_ptr<const HostInfo> host_1 = chooseAHost_(vms[0]->cpu, vms[0]->mem);
     res->emplace_back(vector<int>({0}));
     memo.emplace_back(host_1->basicCost + host_1->dailyCost);
     const int vms_size = vms.size();
@@ -369,9 +370,9 @@ shared_ptr<vector<vector<int>>> Scheduler::buyHostsfor_itr(vector<shared_ptr<Vir
         shared_ptr<const HostInfo> host_i;
         shared_ptr<VirtualMachine> &vm_i = vms[i];
         if (vm_i->IsDoubleNode() == 0)
-            host_i = chooseAHost(vm_i->cpu, vm_i->mem);
+            host_i = chooseAHost_(vm_i->cpu, vm_i->mem);
         else
-            host_i = chooseAHost(vm_i->cpu * 2, vm_i->mem * 2);
+            host_i = chooseAHost_(vm_i->cpu * 2, vm_i->mem * 2);
 
         int excessExpense = 0;
         // if (!host_i)
@@ -457,7 +458,7 @@ void Scheduler::clearVmBuffer()
             group_vm.emplace_back(_vm_buffer[vm_group_i[j]]);
         }
         
-        auto host_info = chooseAHost(group_vm);
+        auto host_info = chooseAHost(group_vm);//ljm这里要改
         auto host = _buyAHost_immedidate(*host_info);
         if (host)
         {
@@ -507,13 +508,7 @@ void Scheduler::declareANewDay()
 {
     _migrateVMNumPerDay = 0;
     _host_num_lastday = _hosts.size();
-    // for (auto &i : _free_host)
-    // {
-    //     if (!i->isFree())
-    //     {
-    //         dcout << "free hosts wrong\n";
-    //     }        
-    // }
+    
     
     // int vmsnum = 0;
     // for (size_t i = 0; i < _hosts.size(); i++)
@@ -538,13 +533,7 @@ void Scheduler::declareANewDay()
     //         cout << "host is not free\n";
     //     }        
     // }    
-    // for (size_t i = 0; i < _busy_host.size(); i++)
-    // {
-    //     if (_busy_host[i]->isFree())
-    //     {
-    //         cout << "host is free\n";
-    //     }
-    // }
+
  
     
     _today_purchased_hosts.clear();
@@ -574,20 +563,24 @@ int Scheduler::getTodayAddVMArrangment(vector<shared_ptr<VirtualMachine>>&vms)
         // string stringcheck = debugcheck.str();
         _today_add_arrangement_num++;
     }
-    printf("%s", _today_add_arrangement.str().c_str());
-    fflush(stdout);
+    _arrangement_info_eachday.emplace(_today_add_arrangement.str());
+    // printf("%s", _today_add_arrangement.str().c_str());
+    // fflush(stdout);
     return _today_add_arrangement_num;
 }
 
 vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts() 
 {
     int today_purchased_num = 0;
-    printf("(purchase, %d)\n", _today_purchased_hosts.size());  
+    stringstream todaypurchase;
+    todaypurchase << "(purchase, " << _today_purchased_hosts.size() << ")\n";
+    // printf("(purchase, %d)\n", _today_purchased_hosts.size());  
       
     for (auto i : _today_purchased_hosts)
     {
-        printf("(%s, %d)\n", i.first.c_str(), i.second);
-        fflush(stdout);
+        // printf("(%s, %d)\n", i.first.c_str(), i.second);
+        todaypurchase << "(" << i.first << ", " << i.second << ")\n";
+        
         int cnt = i.second;
         for (size_t j = _host_num_lastday; j < _hosts.size(); j++)
         {
@@ -605,7 +598,8 @@ vector<shared_ptr<const HostInfo>> Scheduler::getNewPurchasedHosts()
                 }                
             }            
         }        
-    }    
+    }
+    _purchase_info_eachday.emplace(todaypurchase.str());
     return vector<shared_ptr<const HostInfo>>();
 }
 
@@ -639,7 +633,7 @@ shared_ptr<const HostInfo> Scheduler::chooseAHost(const vector<shared_ptr<Virtua
             }
         }
     }
-    auto host = chooseAHost(max(cpuA, cpuB) * 2, max(memA, memB) * 2);
+    auto host = chooseAHost_(max(cpuA, cpuB) * 2, max(memA, memB) * 2);
     return host;
 }
 
@@ -649,11 +643,12 @@ void Scheduler::getTodayMigration()
 //    fflush(stdout);
 //    cout <<  "(migration, " << get_migrateVMNumPerDay() << ")" << endl;
 //    cout <<  "(migration, " << 0 << ")" << endl;
-    printf("(migration, %d)\n", get_migrateVMNumPerDay());
+    // printf("(migration, %d)\n", get_migrateVMNumPerDay());
 
-    printf("%s", _todayMigrationInfo.str().c_str());
-    fflush(stdout);
-    _todayMigrationInfo.str("");
+    // printf("%s", _todayMigrationInfo.str().c_str());
+_migration_info_eachday.emplace("(migration, " + to_string(get_migrateVMNumPerDay()) + ")\n" +
+                                _todayMigrationInfo.str());
+_todayMigrationInfo.str("");
 //    printMigrateInfo();
     // cout << "(migration, 0)"<< endl;
 }
@@ -841,9 +836,34 @@ void Scheduler::recordPurchasedHost(const HostInfo& host)
     }
 }
 
+void Scheduler::printADayInfo() 
+{
+    printf("%s", _purchase_info_eachday.front().c_str());
+    printf("%s", _migration_info_eachday.front().c_str());
+    printf("%s", _arrangement_info_eachday.front().c_str());
+    _purchase_info_eachday.pop();
+    _migration_info_eachday.pop();
+    _arrangement_info_eachday.pop();
+    fflush(stdout);
+}
+
+void Scheduler::printRemainInfo()
+{
+    while (!_purchase_info_eachday.empty())
+    {
+        printf("%s", _purchase_info_eachday.front().c_str());
+        printf("%s", _migration_info_eachday.front().c_str());
+        printf("%s", _arrangement_info_eachday.front().c_str());
+        _purchase_info_eachday.pop();
+        _migration_info_eachday.pop();
+        _arrangement_info_eachday.pop();
+    }
+    fflush(stdout);
+}
+
 bool Scheduler::isMigrationOver5_1000() const
 {
-    return _migrateVMNumPerDay >= ((int)(_vms.size() * 0.005 - 2));
+    return _migrateVMNumPerDay >= ((int)(_vms.size() * 0.03 - 2));
 }
 
 
@@ -901,8 +921,8 @@ bool Scheduler::chooseAHostToFree(shared_ptr<Host> &leastBusyHost)
             break;
         shared_ptr<VirtualMachine> vmToFree((*it).second);
         bool flag = false;
-        for (int i = _migrate_list.size() - 1; leastBusyHost_index != _migrate_list[i]->getIndex(); i--)
-        //在migrate_list找一个最满的塞进去/不要碰到自己的这个host
+        for (int i = _migrate_list.size() - 1; leastBusyHost_index != _migrate_list[i]->getIndex(); --i)
+        //在migrate_list找一个daily最便宜的塞进去/不要碰到自己的这个host
         {
             shared_ptr<Host>& hostToMigrate =_migrate_list[i];
             if (migrateVM(vmToFree, hostToMigrate))
@@ -925,7 +945,7 @@ bool Scheduler::chooseAHostToFree(shared_ptr<Host> &leastBusyHost)
                 break;
             }
         }
-        if (!flag)
+        if (!flag)//如果有一个失败了那就不折腾了 说明这个无法搬空
         {
             break;
         }
@@ -954,13 +974,21 @@ void Scheduler::oneDayMigration() {
      * This method handles one day's all migration begin from the migration_list
      * first maintain the migration list everyday
      */
+    // double noload = 0.0;
+    // for (auto &i : _busy_host)
+    // {
+    //      noload += i->getNoLoadRatio();
+    // }
+    // noload /= _busy_host.size();
+    // cout <<"before: "<< noload << endl;
+    // hist no load rate in each busy host
 
     _migrate_list = _busy_host;
     //    cout << "_host:" << _hosts.size() << " free:" << _free_host.size() << " busy:" << _busy_host.size() << " migrate:" << _migrate_list.size() << endl;
     std::sort(_migrate_list.begin(), _migrate_list.end(), cmp);
-    int cnt = min(105, (int)_migrate_list.size());
+    int cnt = min(250, (int)_migrate_list.size());
     int cnttmp = 0;
-    for (auto itr = _migrate_list.begin(); itr != _migrate_list.end(); cnttmp++)
+    for (auto itr = _migrate_list.begin(); itr != _migrate_list.end() ; )
     {
         //        cout << (*itr)->getType() << endl;
         if (isMigrationOver5_1000())
@@ -986,6 +1014,22 @@ void Scheduler::oneDayMigration() {
         }
         //        break;
     }
+    // noload = 0.0;
+    // for (auto &i : _busy_host)
+    // {
+    //      noload += i->getNoLoadRatio();
+    // }
+    // noload /= _busy_host.size();
+    // cout <<"after: "<< noload << endl;
+    // for (size_t i = 0; i < _busy_host.size(); i++)
+    // {
+    //     auto & h = _busy_host[i];
+    //     if (_busy_host[i]->isFree())
+    //     {
+    //         cout << "host is free\n";
+    //     }
+    // }
+    
 }
 
 int Scheduler::get_migrateVMNumPerDay() const {
@@ -993,6 +1037,8 @@ int Scheduler::get_migrateVMNumPerDay() const {
 }
 
 bool Scheduler::cmp(shared_ptr<Host> & a, shared_ptr<Host> & b) {
+    // return a->getVmNum() < b->getVmNum();
+    return a->m_cost_perday > b->m_cost_perday;
     return (a->getAvailableCpuA() + a->getAvailableCpuB()) > (b->getAvailableCpuA() + b->getAvailableCpuB());
 }
 
@@ -1000,4 +1046,4 @@ void Scheduler::printMigrateInfo() {
     printf("%s", _todayMigrationInfo.str().c_str());
     fflush(stdout);
     _todayMigrationInfo.str("");
-}
+} 

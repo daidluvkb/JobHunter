@@ -15,7 +15,6 @@ class Host{
         const int m_num_of_cpu;
         const int m_size_of_mem;
         const int m_cost_base;
-        const int m_cost_perday;
         int m_index;
         unordered_map <int, shared_ptr <VirtualMachine>> _vms;
         int _left_cpu_A;
@@ -23,8 +22,10 @@ class Host{
         int _left_mem_A;
         int _left_mem_B;
     public:
-    bool isAbleToAddVM(shared_ptr<VirtualMachine>& vm);
-        
+        const int m_cost_perday;
+        double getNoLoadRatio() const;
+        bool isAbleToAddVM(shared_ptr<VirtualMachine> &vm);
+        int getVmNum() const;
         string getType() const { return m_type; }
         bool checkMyself() const;
         Host(const string &type, int num_of_cpu, int size_of_mem, int cost_base, int cost_perday, int index);

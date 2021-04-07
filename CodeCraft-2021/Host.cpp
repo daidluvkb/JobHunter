@@ -561,3 +561,13 @@ bool Host::isAbleToAddVM(shared_ptr<VirtualMachine> &vm)
     }
     return success;
 }
+
+int Host::getVmNum() const
+{
+    return _vms.size();
+}
+
+double Host::getNoLoadRatio() const
+{
+    return (_left_cpu_A + _left_cpu_B + _left_mem_A + _left_mem_B) / (double)(m_num_of_cpu + m_size_of_mem);
+}

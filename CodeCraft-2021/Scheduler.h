@@ -5,6 +5,7 @@
 #include "Host.h"
 #include <vector>
 #include "utils.h"
+#include <queue>
 
 #include <sstream>
 
@@ -16,9 +17,14 @@ private:
     int _host_num_lastday;
     int getTodayDailyCost();
     void recordPurchasedHost(const HostInfo& host);
+    queue<string> _purchase_info_eachday;
+    queue<string> _migration_info_eachday;
+    queue<string> _arrangement_info_eachday;
 private:
     /* data */
+
     bool isMigrationOver5_1000() const;
+
     stringstream _today_add_arrangement;
     unordered_map<string, int> _today_purchased_hosts;//host type/name and cnt;
     vector<string> _today_purchased_hosts_vec;//host ;
@@ -47,8 +53,12 @@ private:
     vector<shared_ptr<VirtualMachine>> _vm_buffer;
     
 public:
+    double getVmProbability(const int cpu,  const int mem) const;   //lst
+
     Scheduler(/* args */);
     ~Scheduler(); 
+    void printADayInfo();
+    void printRemainInfo();
     void setHostCandidates(unordered_map<string, HostInfo> &hostInfos);
     void deleteVM(vector<int> &ptr);
     void deleteVM(const int id);
@@ -90,6 +100,13 @@ public:
     static bool cmp(shared_ptr<Host>&, shared_ptr<Host> &);
     void oneDayMigration();
     void printMigrateInfo();
+    //第一步求今天可以迁移的vm最大数量
+    //2：找到几个空载率最高的host，vm总和小于第一步
+    //3；在freelist里面n个freelist 和m 个vm 求daily最小；
+    //  [[1,2,3],[4,5,6],[7,8],[9],[10]][对应的host]
+    //4： shared_ptr<vector<vector<int>>> chooseHostsforMigrationVms_dp(vector<shared_ptr<VirtualMachine>> vms);
+    //统计迁移：//czy
+
 };
 
 #endif

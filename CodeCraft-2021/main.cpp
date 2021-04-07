@@ -201,8 +201,11 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
 
         getline(infile, s);
         // fflush(stdin);
-        int days = stoi(s);
-
+        int k_p = s.find(' ');
+        string s_days = s.substr(0, k_p);
+        string s_K = s.substr(k_p + 1, s.length() - k_p);
+        int days = stoi(s_days);
+        int K = stoi(s_K)-1;
         for (int i = 0; i < days; i++)
         {
             /*
@@ -210,6 +213,7 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
         */
             scheduler.declareANewDay();
             scheduler.oneDayMigration();
+            
             // cout << "(migration, " << scheduler.get_migrateVMNumPerDay() << ")" << endl;
             getline(infile, s);
             // fflush(stdin);
@@ -243,15 +247,22 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
             // if (i % 100 == 0)
             // {
                 // cout << i << endl;
-            auto today_purchased_result = scheduler.getNewPurchasedHosts();
+            auto today_purchased_result = scheduler.getNewPurchasedHosts(); //only evaluate not print
             scheduler.getTodayMigration();
             scheduler.getTodayAddVMArrangment(oneDayAddVM);
-           
+            if (K)   //print out 
+            {
+                --K;
+            }else{
+                scheduler.printADayInfo();
+            }
             // }
             // exit(0);
         }
-        // scheduler.checkVMS();
+        
+        scheduler.printRemainInfo();
         // infile.close();
+
     }
 int main()
 {
@@ -259,7 +270,7 @@ int main()
     clock_t start, end;
     //定义clock_t变量
     start = clock();
-   string testDataName = "../training-data/training-1.txt";
+   string testDataName = "../training-data/training-2.txt";
     string testDataName_2 = "../training-data/training-2.txt";
     //dcout << "Begin to schdule!" << endl;
 //    ifstream infile(testDataName, ios::in);
