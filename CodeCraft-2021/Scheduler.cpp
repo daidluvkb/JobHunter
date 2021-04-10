@@ -1046,4 +1046,82 @@ void Scheduler::printMigrateInfo() {
     printf("%s", _todayMigrationInfo.str().c_str());
     fflush(stdout);
     _todayMigrationInfo.str("");
-} 
+}
+
+shared_ptr<vector<vector<int>>> Scheduler::chooseHostsforMigrationVms_dp(vector<shared_ptr <VirtualMachine>>&vms, float currentPrice){
+    /*
+     * give a list of vms and previous price, give a new choice of hosts set
+     */
+    float money;
+    unordered_map<shared_ptr<Host>, vector<shared_ptr<VirtualMachine>>> tmp;
+    for (auto it : vms){
+        shared_ptr<VirtualMachine> vm = it;
+        shared_ptr<Host> choosedHost = chooseAHostToInsert(vm, tmp);
+        if (choosedHost){ // 当前一步选取host成功, 将vm标记为放在该host中
+            if(tmp.find(choosedHost)!=tmp.end()){
+                tmp[choosedHost].push_back(vm);
+            }else{
+                vector<shared_ptr<VirtualMachine>> t;
+                tmp.insert(make_pair(choosedHost, t));
+                tmp[choosedHost].push_back(vm);
+                if(choosedHost->isFree()){ // 如果其本来是空闲的,就要把钱加上,如果本来就是busy的,则没必要重复加钱
+                    money += choosedHost->getCostPerDay();
+                }
+            }
+        }
+    }
+    vector<vector<int>> result;
+    if(money < currentPrice){
+        for(auto it:tmp){
+            shared_ptr<Host> host = it.first;
+            vector<shared_ptr<VirtualMachine>> vms = it.second;
+            vector<int> oneHostVMs;
+            for(int i =0; i< vms.size(); i++){
+                oneHostVMs.push_back(vms[i]->getId());
+            }
+            oneHostVMs.push_back(host->getIndex());
+            result.push_back(oneHostVMs);
+        }
+    }
+    return make_shared<vector<vector<int>>>(result);
+
+}
+
+shared_ptr<Host> Scheduler::chooseAHostToInsert(shared_ptr<VirtualMachine> &vm, unordered_map<shared_ptr<Host>, vector<shared_ptr<VirtualMachine>>>& hosts){
+    bool is_double = !vm->IsDoubleNode();
+    for (size_t i = 0; i < _busy_host.size(); i++)
+    {
+        auto it = hosts.find(_busy_host[i]);
+        vector<shared_ptr<VirtualMachine>> curVMs;
+        if(it != hosts.end()){
+            curVMs = it->second;
+            curVMs.push_back(vm);
+        }else{
+//            shared_ptr<vector<shared_ptr<VirtualMachine>>> curVMs;
+            curVMs.push_back(vm);
+        }
+
+        if(_busy_host[i]->addVMs_try(curVMs)){
+            return _busy_host[i];
+        }
+    }
+
+    for (auto i = _free_host.begin(); i != _free_host.end(); i++)
+    {
+        auto it = hosts.find((*i));
+        vector<shared_ptr<VirtualMachine>> curVMs;
+        if(it != hosts.end()){
+            curVMs = it->second;
+            curVMs.push_back(vm);
+        }else{
+//            shared_ptr<vector<shared_ptr<VirtualMachine>>> curVMs;
+            curVMs.push_back(vm);
+        }
+
+        if((*i)->addVMs_try(curVMs)){
+            return *i;
+        }
+    }
+
+    return nullptr; //找host失败
+}
