@@ -3,9 +3,11 @@
 #include <unordered_map>
 #include "VirtualMachine.h"
 #include "Host.h"
+#include "VmInfoManager.h"
 #include <vector>
 #include "utils.h"
 #include <queue>
+#include <random>
 
 #include <sstream>
 
@@ -34,7 +36,6 @@ private:
     vector<shared_ptr<Host>> _free_host;
     vector<shared_ptr<Host>> _busy_host;
     vector<shared_ptr<Host>> _hosts;
-    int _host_cheapest;
     int _today_add_arrangement_num;
 private:
     /* method */
@@ -51,10 +52,13 @@ private:
     void _buyAHost_opt(const HostInfo& host);
     void _addHostToFree(shared_ptr<Host>& host);
     vector<shared_ptr<VirtualMachine>> _vm_buffer;
-    
-public:
-    double getVmProbability(const int cpu,  const int mem) const;   //lst
+    shared_ptr<VmInfoManager> _vm_info_manager;
 
+    unsigned seed;
+    mt19937 rand_num; // 大随机数
+public:
+    // double getVmProbability(const int cpu,  const int mem) const;   //lst
+    void createVmInfoManager(const unordered_map<string, VMInfo> &setvmInfos);
     Scheduler(/* args */);
     ~Scheduler(); 
     void printADayInfo();
@@ -67,7 +71,9 @@ public:
     void addVM_bystep_dp(shared_ptr<VirtualMachine> &vm);
     void addVM_dp(shared_ptr<VirtualMachine>& vm);
     void clearVmBuffer();
-    shared_ptr<vector<vector<int>>> buyHostsfor_itr(vector<shared_ptr<VirtualMachine>> vms);
+    pair<shared_ptr<vector<vector<int>>>, vector<shared_ptr<const HostInfo>>> buyHostsfor_itr(vector<shared_ptr<VirtualMachine>> &vms);
+    pair<shared_ptr<vector<vector<int>>>, vector<shared_ptr<const HostInfo>>> buyHostsfor_itr_rand(vector<shared_ptr<VirtualMachine>> &vms);
+    pair<shared_ptr<vector<vector<int>>>, vector<shared_ptr<const HostInfo>>> buyHostsfor_rand(vector<shared_ptr<VirtualMachine>> &vms);
     void addVM_opt(vector<shared_ptr<VirtualMachine>> &vms);
 
     void shutHost(shared_ptr<Host> &host);
@@ -79,6 +85,7 @@ public:
     shared_ptr<const HostInfo> chooseAHost(const vector<shared_ptr<VirtualMachine>> &vms);
     shared_ptr<const HostInfo> chooseAHost(const int cpu, const int mem);
     shared_ptr<const HostInfo> chooseAHost_(const int cpu, const int mem);
+    shared_ptr<const HostInfo> chooseAHost__unstable(const int cpu, const int mem);
     shared_ptr<const HostInfo> chooseAHost_opt2(const int cpu, const int mem);
     unsigned long long getCost();
     void checkVMS();

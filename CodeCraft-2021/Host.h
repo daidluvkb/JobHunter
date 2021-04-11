@@ -33,6 +33,7 @@ class Host{
         int getSmallestCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm) const;
         int getLargestCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm) const;
         void getAbnormalCapcityAfterAdd(const shared_ptr<VirtualMachine> &vm, int &small, int &large) const;
+        double getRemainCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm, int &cpu, int &mem) const;
         void getAbnormalCapcity(int &small, int &large) const;
         
         void setIndex(const int index) { m_index = index; }

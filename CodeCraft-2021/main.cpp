@@ -198,7 +198,7 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
             // fflush(stdin);
             makeNewVM(s);
         }
-
+        scheduler.createVmInfoManager(vmInfos);
         getline(infile, s);
         // fflush(stdin);
         int k_p = s.find(' ');
@@ -232,7 +232,7 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
                 }
                 else if (s[1] == 'd')
                 {
-                    scheduler.clearVmBuffer();
+                    // scheduler.clearVmBuffer();
                     // cout << "del" << endl;
                     int id_h = s.find(' ');
                     int id_t = s.find(',', id_h);
@@ -241,12 +241,7 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
                 }
             }
             scheduler.clearVmBuffer();
-            //        scheduler.checkVMS();
-            // scheduler.deleteVM(oneDayDelVM);
-            // scheduler.addVM(oneDayAddVM);
-            // if (i % 100 == 0)
-            // {
-                // cout << i << endl;
+            //     
             auto today_purchased_result = scheduler.getNewPurchasedHosts(); //only evaluate not print
             scheduler.getTodayMigration();
             scheduler.getTodayAddVMArrangment(oneDayAddVM);
@@ -256,8 +251,7 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
             }else{
                 scheduler.printADayInfo();
             }
-            // }
-            // exit(0);
+            
         }
         
         scheduler.printRemainInfo();
@@ -270,7 +264,7 @@ int main()
     clock_t start, end;
     //定义clock_t变量
     start = clock();
-   string testDataName = "../training-data/training-2.txt";
+   string testDataName = "../training-data/training-1.txt";
     string testDataName_2 = "../training-data/training-2.txt";
     //dcout << "Begin to schdule!" << endl;
 //    ifstream infile(testDataName, ios::in);

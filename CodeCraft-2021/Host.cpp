@@ -83,29 +83,53 @@ void Host::getAbnormalCapcityAfterAdd(const shared_ptr<VirtualMachine> &vm, int 
 {
     int largest = 0;
     int tmpdata[4];
+    const int vm_cpu = vm->cpu;
+    const int vm_mem = vm->mem;
     if (vm->IsDoubleNode() == 0)
     {
-        tmpdata[0] = _left_cpu_A - (vm->getNumOfCpu() / 2);
-        tmpdata[1] = _left_cpu_B - (vm->getNumOfCpu() / 2);
-        tmpdata[2] = _left_mem_A - (vm->getSizeOfMem() / 2);
-        tmpdata[3] = _left_mem_B - (vm->getSizeOfMem() / 2);
+        tmpdata[0] = _left_cpu_A - (vm_cpu / 2);
+        tmpdata[1] = _left_cpu_B - (vm_cpu / 2);
+        tmpdata[2] = _left_mem_A - (vm_mem / 2);
+        tmpdata[3] = _left_mem_B - (vm_mem / 2);
     }
     else
     {
-        if (_left_mem_A >= _left_mem_B && _left_cpu_A >= vm->getNumOfCpu())
+        
+        tmpdata[0] = _left_cpu_A ;
+        tmpdata[1] = _left_cpu_B ;
+        tmpdata[2] = _left_mem_A ;
+        tmpdata[3] = _left_mem_B ;
+        bool A = false, B = false;
+        if (_left_cpu_A >= vm_cpu && _left_mem_A >= vm_mem)
         {
-
-            tmpdata[0] = _left_cpu_A - vm->getNumOfCpu();
-            tmpdata[1] = _left_cpu_B;
-            tmpdata[2] = _left_mem_A - vm->getSizeOfMem();
-            tmpdata[3] = _left_mem_B;
+            A = true;
         }
-        else if (_left_mem_B >= _left_mem_A && _left_cpu_B >= vm->getNumOfCpu())
+        if (_left_cpu_B >= vm_cpu && _left_mem_B >= vm_mem)
         {
-            tmpdata[0] = _left_cpu_A;
-            tmpdata[1] = _left_cpu_B - vm->getNumOfCpu();
-            tmpdata[2] = _left_mem_A;
-            tmpdata[3] = _left_mem_B - vm->getSizeOfMem();
+            B = true;
+        }
+        if (A && B)
+        {
+            if (_left_cpu_A >= _left_cpu_B)
+            {
+                tmpdata[0] = _left_cpu_A - vm_cpu;
+                tmpdata[2] = _left_mem_A - vm_mem;
+            }
+            else
+            {
+                tmpdata[1] = _left_cpu_B - vm_cpu;
+                tmpdata[3] = _left_mem_B - vm_mem;
+            }
+        }
+        else if (!A)
+        {
+            tmpdata[1] = _left_cpu_B - vm_cpu;
+            tmpdata[3] = _left_mem_B - vm_mem;
+        }
+        else
+        {
+            tmpdata[0] = _left_cpu_A - vm_cpu;
+            tmpdata[2] = _left_mem_A - vm_mem;
         }
     }
     small = tmpdata[0];
@@ -117,14 +141,83 @@ void Host::getAbnormalCapcityAfterAdd(const shared_ptr<VirtualMachine> &vm, int 
     large = small == tmpdata[2] ? tmpdata[0] : large;
     large = small == tmpdata[1] ? tmpdata[3] : large;
     large = small == tmpdata[3] ? tmpdata[1] : large;
-    // if (tmpdata[0] < tmpdata[1] && tmpdata[2] > tmpdata[3])
-    // {
-    //      small = tmpdata[0];
-    // }
-    // else if (tmpdata[0] > tmpdata[1] && tmpdata[2] < tmpdata[3])
-    // {
-    // }
 }
+
+double Host::getRemainCapacityAfterAdd(const shared_ptr<VirtualMachine> &vm, int &cpu, int &mem) const
+{
+     int largest = 0;
+    int tmpdata[4];
+    const int vm_cpu = vm->cpu;
+    const int vm_mem = vm->mem;
+
+    if (!vm || vm->IsDoubleNode() == 0)
+    {
+        tmpdata[0] = _left_cpu_A - (vm_cpu / 2);
+        tmpdata[1] = _left_cpu_B - (vm_cpu / 2);
+        tmpdata[2] = _left_mem_A - (vm_mem / 2);
+        tmpdata[3] = _left_mem_B - (vm_mem / 2);
+        if (_left_cpu_A + _left_mem_A <= _left_mem_B + _left_cpu_B) //A剩余少 按照A算
+        {
+            cpu = tmpdata[0];
+            mem = tmpdata[2];
+        }
+        else
+        {
+            cpu = tmpdata[1];
+            mem = tmpdata[3];
+        }
+    }
+    else //单节点
+    {
+        
+        tmpdata[0] = _left_cpu_A ;
+        tmpdata[1] = _left_cpu_B ;
+        tmpdata[2] = _left_mem_A ;
+        tmpdata[3] = _left_mem_B ;
+        bool A = false, B = false;
+        if (_left_cpu_A >= vm_cpu && _left_mem_A >= vm_mem)
+        {
+            A = true;
+        }
+        if (_left_cpu_B >= vm_cpu && _left_mem_B >= vm_mem)
+        {
+            B = true;
+        }
+        if (A && B)
+        {
+            if (_left_cpu_A + _left_mem_A >= _left_cpu_B + _left_mem_B) //A的容量更多
+            {
+                B = false;
+            }
+            else
+            {
+                A = false;
+            }
+        }
+        if (!A)
+        {
+            tmpdata[1] = _left_cpu_B - vm_cpu;
+            cpu = tmpdata[1];
+            tmpdata[3] = _left_mem_B - vm_mem;
+            mem = tmpdata[3];
+        }
+        else
+        {
+            tmpdata[0] = _left_cpu_A - vm_cpu;
+            cpu = tmpdata[0];
+            tmpdata[2] = _left_mem_A - vm_mem;
+            mem = tmpdata[2];
+        }
+    }
+
+    double noload = 0.0;
+    for (int i = 0; i < 4; ++i)
+    {
+        noload += tmpdata[i];
+    }
+    return noload / (m_num_of_cpu + m_size_of_mem);
+}
+
 bool Host::addVMs(vector<shared_ptr<VirtualMachine>>& vms) 
 {
     int &cpuA = _left_cpu_A, &memA = _left_mem_A;
@@ -293,7 +386,7 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
         success = true;
         if (A && B)
         {
-            if (_left_cpu_A >= _left_cpu_B)
+            if (_left_cpu_A + _left_mem_A >= _left_cpu_B + _left_mem_B)
             {
                 vm->setNode(true);
                 _left_cpu_A -= cpu;
@@ -315,20 +408,20 @@ bool Host::addVM_try(shared_ptr<VirtualMachine> &vm)
             vm->setNode(false);
             _left_cpu_B -= cpu;
             _left_mem_B -= mem;
-            if (_left_cpu_B < 0 || _left_mem_B < 0)
-                dcout << "overflow\n";
+            // if (_left_cpu_B < 0 || _left_mem_B < 0)
+            //     dcout << "overflow\n";
         }
         else
         {
             vm->setNode(true);
             _left_cpu_A -= cpu;
             _left_mem_A -= mem;
-            if (_left_cpu_A < 0 || _left_mem_A < 0)
-                dcout << "overflow\n";
+            // if (_left_cpu_A < 0 || _left_mem_A < 0)
+            //     dcout << "overflow\n";
         }
     }
     if (success)
-        _vms[vm->getId()] = vm;
+        _vms[vm->m_index] = vm;
     return success;
 }
 
@@ -369,7 +462,7 @@ bool Host::addVM_try_migrate(shared_ptr<VirtualMachine> &vm)
         if (A && B)
         {
             vm->getHost()->deleteVM(vm->getId());
-            if (_left_cpu_A >= _left_cpu_B)
+            if (_left_cpu_A + _left_mem_A >= _left_cpu_B + _left_mem_B)
             {
                 vm->setNode(true);
                 _left_cpu_A -= cpu;

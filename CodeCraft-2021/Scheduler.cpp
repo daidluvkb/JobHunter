@@ -2,39 +2,46 @@
 #include <float.h>
 #include <cmath>
 #include <assert.h>
+#include <chrono>
 
-Scheduler::Scheduler(/* args */)
+Scheduler::Scheduler(/* args */) : _vm_info_manager(nullptr)
 {
-   cost = 0;
-   _today_add_arrangement_num = 0;
+    seed = std::chrono::system_clock::now().time_since_epoch().count();
+    rand_num = mt19937(seed); // 大随机数
+    cost = 0;
+    _today_add_arrangement_num = 0;
 }
 
 Scheduler::~Scheduler()
 {
 }
-
+bool cmpHostCandidate(HostInfo &h1, HostInfo &h2)
+{
+    return h1.basicCost < h2.basicCost;
+}
 void Scheduler::setHostCandidates(unordered_map<string, HostInfo> &hostInfos) 
 {
     if(_host_candidates.size())
         return;
-    _host_cheapest = 0;
     _host_candidates.reserve(hostInfos.size());
     for (auto itr = hostInfos.begin(); itr != hostInfos.end(); itr++)
     {
         _host_candidates.emplace_back(itr->second);
     }
-    for (size_t i = 0; i < _host_candidates.size() - 1; i++)
-    {
-        for (size_t j = i + 1; j < _host_candidates.size(); j++)
-        {
-            if(_host_candidates[i].basicCost > _host_candidates[j].basicCost)
-            {
-                swap(_host_candidates[i], _host_candidates[j]);
-            }
-        }
+    sort(_host_candidates.begin(), _host_candidates.end(), cmpHostCandidate);
+    return;
+    // for (size_t i = 0; i < _host_candidates.size() - 1; i++)
+    // {
+    //     for (size_t j = i + 1; j < _host_candidates.size(); j++)
+    //     {
+    //         if(_host_candidates[i].basicCost > _host_candidates[j].basicCost)
+    //         {
+    //             swap(_host_candidates[i], _host_candidates[j]);
+    //         }
+    //     }
         
-    }
-    dcout << "sorted hosts candidate according to basic cost"<< endl;
+    // }
+    // dcout << "sorted hosts candidate according to basic cost"<< endl;
 }
 
 
@@ -83,8 +90,10 @@ void Scheduler::deleteVM(const int id)
     if (itr != _vms.end())
     {
         shared_ptr<Host> host = itr->second->getHost();
-            host->deleteVM(id);
-            _vms.erase(itr);
+        if (!host)
+            clearVmBuffer();
+        host->deleteVM(id);
+        _vms.erase(itr);
         if (host->isFree())
         {
 
@@ -324,16 +333,24 @@ void Scheduler::addVM_dp(shared_ptr<VirtualMachine>& vm)
     {
         if (_busy_host[i]->isAbleToAddVM(vm))
         {
-            int small = INT32_MAX, large = 0;
-            int small_ = INT32_MAX, large_ = 0;
-            _busy_host[i]->getAbnormalCapcity(small_, large_);
-            _busy_host[i]->getAbnormalCapcityAfterAdd(vm, small, large);
-
-            if (small < 6 && large > 70 && small_ != small && large != large_)
+            // int small = INT32_MAX, large = 0;
+            // int small_ = INT32_MAX, large_ = 0;
+            // _busy_host[i]->getAbnormalCapcity(small_, large_);
+            // _busy_host[i]->getAbnormalCapcityAfterAdd(vm, small, large);
+            int cpu  = 0, mem = 0;
+            double noload = _busy_host[i]->getRemainCapacityAfterAdd(vm, cpu, mem);
+            double proba = _vm_info_manager->getVmProbability(cpu, mem);
+            // _vm_info_manager->getVmProbability(18, 128);
+            // if (small < 3 && large > 70 && small_ != small && large != large_)// && large / (small + 1) > 60
+            // {
+            //    // continue;
+            // }//原来的hardcoding
+            if (noload > 0.10 && proba < 0.010)
             {
                 continue;
+                // _busy_host[i]->addVM_try(vm);
             }
-            
+
             _busy_host[i]->addVM_try(vm);
             vm->setHost(_busy_host[i]);
             return;
@@ -353,17 +370,26 @@ void Scheduler::addVM_dp(shared_ptr<VirtualMachine>& vm)
     _vm_buffer.emplace_back(vm);
     return;
 }
-shared_ptr<vector<vector<int>>> Scheduler::buyHostsfor_itr(vector<shared_ptr<VirtualMachine>> vms)
+bool cmp_vmsize(const shared_ptr<VirtualMachine>&vm1, const shared_ptr<VirtualMachine>&vm2){
+    return (vm1->cpu + vm1->mem) > (vm2->cpu + vm2->mem);
+}
+pair<shared_ptr<vector<vector<int>>>, vector<shared_ptr<const HostInfo>>>  Scheduler::buyHostsfor_itr(vector<shared_ptr<VirtualMachine>> &vms)
 {
+    // sort(vms.begin(), vms.end(), cmp_vmsize);
     shared_ptr<vector<vector<int>>> res = make_shared<vector<vector<int>>>(); //记录组号-组成员在vms中下标
-    vector<int> memo;        //记录当前每一组的组号-价格
+    vector<shared_ptr<const HostInfo>> memo;        //记录当前每一组的组号-价格
 
     if (vms.empty())
-        return res;
+        return make_pair(res, memo);
 
-    shared_ptr<const HostInfo> host_1 = chooseAHost_(vms[0]->cpu, vms[0]->mem);
+    shared_ptr<const HostInfo> host_1; //= chooseAHost_(vms[0]->cpu, vms[0]->mem);
+    if (vms[0]->IsDoubleNode() == 0)
+        host_1 = chooseAHost_(vms[0]->cpu, vms[0]->mem);
+    else
+        host_1 = chooseAHost_(vms[0]->cpu * 2, vms[0]->mem * 2);
+
     res->emplace_back(vector<int>({0}));
-    memo.emplace_back(host_1->basicCost + host_1->dailyCost);
+    memo.emplace_back(host_1);//可以不加 不是一个数量级的
     const int vms_size = vms.size();
     for (int i = 1; i < vms_size; i++)
     {
@@ -375,13 +401,9 @@ shared_ptr<vector<vector<int>>> Scheduler::buyHostsfor_itr(vector<shared_ptr<Vir
             host_i = chooseAHost_(vm_i->cpu * 2, vm_i->mem * 2);
 
         int excessExpense = 0;
-        // if (!host_i)
-        // {
-        //     excessExpense = INT32_MAX;
-        // }
-        // else
+   
         {
-            excessExpense = host_i->basicCost + host_i->dailyCost;
+            excessExpense = host_i->basicCost ;//+ host_i->dailyCost;
         }
         
         const int res_size = res->size();
@@ -399,10 +421,10 @@ shared_ptr<vector<vector<int>>> Scheduler::buyHostsfor_itr(vector<shared_ptr<Vir
             shared_ptr<const HostInfo> costAfter = chooseAHost(tmpres);
             if (costAfter)
             {
-                int excessExpense_j = costAfter->dailyCost + costAfter->basicCost; //合在一起花的钱
-                if (excessExpense_j < memo[j] + excessExpense)
+                int excessExpense_j = costAfter->basicCost; //+ costAfter->dailyCost; //合在一起花的钱
+                if (excessExpense_j < memo[j]->basicCost + excessExpense)
                 {
-                    memo[j] = excessExpense_j;
+                    memo[j] = costAfter;
                     idx = j;
                 } 
             }     //else
@@ -411,21 +433,143 @@ shared_ptr<vector<vector<int>>> Scheduler::buyHostsfor_itr(vector<shared_ptr<Vir
         if (idx == res_size) //单买更好
         {
             res->emplace_back(vector<int>({i}));
-            memo.emplace_back(excessExpense);
+            memo.emplace_back(host_i);
         }
         else
         {
             res->at(idx).emplace_back(i); //在对应组加入最后一个vm的下标记录
         }
     }
-    return res;
+    return make_pair(res, memo);
+}
+
+pair<shared_ptr<vector<vector<int>>>, vector<shared_ptr<const HostInfo>>> Scheduler::buyHostsfor_itr_rand(vector<shared_ptr<VirtualMachine>> &vms) 
+{
+   
+         // sort(vms.begin(), vms.end(), cmp_vmsize);
+	uniform_int_distribution<long long> dist(3, 10);  // 给定范围
+	
+
+    shared_ptr<vector<vector<int>>> res = make_shared<vector<vector<int>>>(); //记录组号-组成员在vms中下标
+    vector<shared_ptr<const HostInfo>> memo;        //记录当前每一组的组号-价格
+    vector<int> size_lmt;
+    if (vms.empty())
+        return make_pair(res, memo);
+
+    shared_ptr<const HostInfo> host_1; //= chooseAHost_(vms[0]->cpu, vms[0]->mem);
+    if (vms[0]->IsDoubleNode() == 0)
+        host_1 = chooseAHost_(vms[0]->cpu, vms[0]->mem);
+    else
+        host_1 = chooseAHost_(vms[0]->cpu * 2, vms[0]->mem * 2);
+
+    res->emplace_back(vector<int>({0}));
+    memo.emplace_back(host_1);//可以不加 不是一个数量级的
+    size_lmt.emplace_back(dist(rand_num));
+    const int vms_size = vms.size();
+    for (int i = 1; i < vms_size; i++)
+    {
+        shared_ptr<const HostInfo> host_i;
+        shared_ptr<VirtualMachine> &vm_i = vms[i];
+        if (vm_i->IsDoubleNode() == 0)
+            host_i = chooseAHost_(vm_i->cpu, vm_i->mem);
+        else
+            host_i = chooseAHost_(vm_i->cpu * 2, vm_i->mem * 2);
+
+        int excessExpense = 0;
+   
+        {
+            excessExpense = host_i->basicCost ;//+ host_i->dailyCost;
+        }
+        
+        const int res_size = res->size();
+        int idx = res_size;
+        for (size_t j = 0; j < res_size; j++)
+        {
+            auto &resj = res->at(j);
+            const int res_j_size = resj.size();
+            if (res_j_size == size_lmt[j])
+                continue; //不要总是买太大的host
+            vector<shared_ptr<VirtualMachine>> tmpres(res_j_size);
+            for (int k = 0; k < res_j_size; k++)
+            {
+                tmpres[k] = vms[resj[k]];
+            }
+            tmpres.emplace_back(vms[i]);
+            shared_ptr<const HostInfo> costAfter = chooseAHost(tmpres);
+            if (costAfter)
+            {
+                int excessExpense_j = costAfter->basicCost; //+ costAfter->dailyCost; //合在一起花的钱
+                if (excessExpense_j < memo[j]->basicCost + excessExpense)
+                {
+                    memo[j] = costAfter;
+                    idx = j;
+                } 
+            }     //else
+        }
+        // vms.emplace_back(vm_last);
+        if (idx == res_size) //单买更好
+        {
+            res->emplace_back(vector<int>({i}));
+            memo.emplace_back(host_i);
+            size_lmt.emplace_back(dist(rand_num));
+        }
+        else
+        {
+            res->at(idx).emplace_back(i); //在对应组加入最后一个vm的下标记录
+        }
+    }
+    return make_pair(res, memo);
+}
+
+pair<shared_ptr<vector<vector<int>>>, vector<shared_ptr<const HostInfo>>> Scheduler::buyHostsfor_rand(vector<shared_ptr<VirtualMachine>> &vms) 
+{
+             // sort(vms.begin(), vms.end(), cmp_vmsize);
+	uniform_int_distribution<long long> dist(2, 12);  // 给定范围
+	
+
+    shared_ptr<vector<vector<int>>> res = make_shared<vector<vector<int>>>(); //记录组号-组成员在vms中下标
+    vector<shared_ptr<const HostInfo>> memo;        //记录当前每一组的组号-价格
+    vector<int> size_lmt;
+    if (vms.empty())
+        return make_pair(res, memo);
+    shared_ptr<const HostInfo> host_1; //= chooseAHost_(vms[0]->cpu, vms[0]->mem);
+    if (vms[0]->IsDoubleNode() == 0)
+        host_1 = chooseAHost_(vms[0]->cpu, vms[0]->mem);
+    else
+        host_1 = chooseAHost_(vms[0]->cpu * 2, vms[0]->mem * 2);
+
+    const int vms_size = vms.size();
+    int sum = 0;
+    while (sum < vms_size)
+    {
+        size_lmt.emplace_back(dist(rand_num));
+        sum += *(size_lmt.rbegin());
+    }
+    res->emplace_back(vector<int>({0}));
+    size_lmt.emplace_back(dist(rand_num));
+    for (int i = 0; i < vms_size; i++)
+    {
+
+        // if (idx == res_size) //单买更好
+        // {
+        //     res->emplace_back(vector<int>({i}));
+        //     memo.emplace_back(host_i);
+        //     size_lmt.emplace_back(dist(rand_num));
+        // }
+        // else
+        // {
+        //     res->at(idx).emplace_back(i); //在对应组加入最后一个vm的下标记录
+        // }
+    }
+    return make_pair(res, memo);
 }
 
 void Scheduler::clearVmBuffer() 
 {
     if (_vm_buffer.empty())
         return;
-    auto grouping = buyHostsfor_itr(_vm_buffer);
+    auto grouping_and_memo = buyHostsfor_itr_rand(_vm_buffer);
+    // auto grouping_and_memo = buyHostsfor_itr(_vm_buffer);
     // for (size_t i = 1; i <= grouping.size(); i++)
     // {
     //     vector<shared_ptr<VirtualMachine>> group_vm;
@@ -447,6 +591,8 @@ void Scheduler::clearVmBuffer()
     //         _busy_host.emplace_back(host);
     //     }
     // }    
+    auto grouping = grouping_and_memo.first;
+    auto memo = grouping_and_memo.second;
     const size_t grouping_size = grouping->size();
     for (size_t i = 0; i < grouping_size; i++)
     {
@@ -458,11 +604,13 @@ void Scheduler::clearVmBuffer()
             group_vm.emplace_back(_vm_buffer[vm_group_i[j]]);
         }
         
-        auto host_info = chooseAHost(group_vm);//ljm这里要改
+        auto host_info = memo[i];//
+        // auto hosttset = chooseAHost(group_vm);//ljm这里要改
         auto host = _buyAHost_immedidate(*host_info);
         if (host)
         {
             host->addVMs(group_vm);
+            double noload = host->getNoLoadRatio();
             const size_t group_vm_size = group_vm.size();
             for (size_t j = 0; j < group_vm_size; j++)
             {
@@ -508,8 +656,8 @@ void Scheduler::declareANewDay()
 {
     _migrateVMNumPerDay = 0;
     _host_num_lastday = _hosts.size();
-    
-    
+  
+
     // int vmsnum = 0;
     // for (size_t i = 0; i < _hosts.size(); i++)
     // {
@@ -675,14 +823,49 @@ shared_ptr<const HostInfo> Scheduler::chooseAHost_(const int cpu, const int mem)
     int index = -1;  //满足条件的下标
     int index_ = -1; //以防万一
     // int min_dailycost = INT32_MAX;
-    for (size_t i = 0; i < _host_candidates.size() && count > 0 && count_ > 0; i++)
+    const size_t host_candidates_size = _host_candidates.size();
+    for (size_t i = 0; i < host_candidates_size && count > 0 && count_ > 0; i++)
     {
         if (_host_candidates[i].cpu >= cpu && _host_candidates[i].mem >= mem)
         {
             index_ = index_ == -1 ? i : index_;
-            if (fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu) < gap && ((double)mem / (double)_host_candidates[i].mem) > 0.4 /*&& _host_candidates[i].dailyCost < min_dailycost*/)
+            double tmp = fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu);
+            if (tmp < gap && ((double)mem / (double)_host_candidates[i].mem) > 0.4 /*&& _host_candidates[i].dailyCost < min_dailycost*/)
             {
-                gap = fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu);
+                gap = tmp; //fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu);
+                // min_dailycost = _host_candidates[i].dailyCost;
+                index = i;
+                count--;
+            }
+            count_--;
+        }
+    }
+    if (index != -1)
+        return make_shared<HostInfo>(_host_candidates[index]);
+    else if (index_ != -1)
+        return make_shared<HostInfo>(_host_candidates[index_]);
+    return nullptr;
+}
+
+shared_ptr<const HostInfo> Scheduler::chooseAHost__unstable(const int cpu, const int mem) 
+{
+    double mem_to_cpu = (double)mem / (double)cpu;
+    double gap = DBL_MAX;
+    int count = 3;  //取三个最接近的
+    int count_ = 10; //取十个可以装入的
+    int index = -1;  //满足条件的下标
+    int index_ = -1; //以防万一
+    // int min_dailycost = INT32_MAX;
+    const size_t host_candidates_size = _host_candidates.size();
+    for (size_t i = 0; i < host_candidates_size && count > 0 && count_ > 0; i++)
+    {
+        if (_host_candidates[i].cpu >= cpu && _host_candidates[i].mem >= mem)
+        {
+            index_ = index_ == -1 ? i : index_;
+            double tmp = fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu);
+            if (tmp < gap && ((double)mem / (double)_host_candidates[i].mem) > 0.4 /*&& _host_candidates[i].dailyCost < min_dailycost*/)
+            {
+                gap = tmp; //fabs(((double)_host_candidates[i].mem / (double)_host_candidates[i].cpu) - mem_to_cpu);
                 // min_dailycost = _host_candidates[i].dailyCost;
                 index = i;
                 count--;
@@ -811,6 +994,11 @@ void Scheduler::_addHostToFree(shared_ptr<Host>& host)
     {
         _free_host.emplace_back(host);
     }
+}
+
+void Scheduler::createVmInfoManager(const unordered_map<string, VMInfo> &setvmInfos) 
+{
+    _vm_info_manager = make_shared<VmInfoManager>(setvmInfos);
 }
 
 int Scheduler::getTodayDailyCost() 
@@ -986,8 +1174,7 @@ void Scheduler::oneDayMigration() {
     _migrate_list = _busy_host;
     //    cout << "_host:" << _hosts.size() << " free:" << _free_host.size() << " busy:" << _busy_host.size() << " migrate:" << _migrate_list.size() << endl;
     std::sort(_migrate_list.begin(), _migrate_list.end(), cmp);
-    int cnt = min(250, (int)_migrate_list.size());
-    int cnttmp = 0;
+    int cnt = min(1000, (int)_migrate_list.size());
     for (auto itr = _migrate_list.begin(); itr != _migrate_list.end() ; )
     {
         //        cout << (*itr)->getType() << endl;
@@ -1021,6 +1208,8 @@ void Scheduler::oneDayMigration() {
     // }
     // noload /= _busy_host.size();
     // cout <<"after: "<< noload << endl;
+    //   if(_free_host.size()>2)
+    //     cout << _free_host.size() << endl;
     // for (size_t i = 0; i < _busy_host.size(); i++)
     // {
     //     auto & h = _busy_host[i];
