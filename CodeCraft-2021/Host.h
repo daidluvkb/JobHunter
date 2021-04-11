@@ -59,7 +59,7 @@ class Host{
         bool isFree();
         int getNumOfVM() const { return _vms.size(); }
         //int getLeftAfterAdd(const shared_ptr<VirtualMachine>& vm, char& Node);
-
+        bool addVMs_try(vector<shared_ptr<VirtualMachine>>& vms);
     private:
         void print() const;
 };

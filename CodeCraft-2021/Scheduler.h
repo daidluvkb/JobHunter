@@ -113,7 +113,8 @@ public:
     //  [[1,2,3],[4,5,6],[7,8],[9],[10]][对应的host]
     //4： shared_ptr<vector<vector<int>>> chooseHostsforMigrationVms_dp(vector<shared_ptr<VirtualMachine>> vms);
     //统计迁移：//czy
-
+    shared_ptr<vector<vector<int>>> chooseHostsforMigrationVms_dp(vector<shared_ptr <VirtualMachine>>&vms, float currentPrice);
+    shared_ptr<Host> chooseAHostToInsert(shared_ptr<VirtualMachine> &, unordered_map<shared_ptr<Host>, vector<shared_ptr<VirtualMachine>>>&);// 从busy,free的list中找一个可以的host
 };
 
 #endif

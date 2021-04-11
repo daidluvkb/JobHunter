@@ -664,3 +664,46 @@ double Host::getNoLoadRatio() const
 {
     return (_left_cpu_A + _left_cpu_B + _left_mem_A + _left_mem_B) / (double)(m_num_of_cpu + m_size_of_mem);
 }
+
+bool Host::addVMs_try(vector<shared_ptr<VirtualMachine>>& vms)
+{
+    int cpuA = _left_cpu_A, memA = _left_mem_A;
+    int cpuB = _left_cpu_B, memB = _left_mem_B;
+    const int vmssize = vms.size();
+//    _vms.reserve(vms.size()+_vms.size());
+    // _vms.rehash(vmssize+_vms.size());
+    for (size_t i = 0; i < vmssize; i++)
+    {
+        // cout << vms[i]->getId()<< endl;
+        int id = vms[i]->getId();
+        shared_ptr<VirtualMachine> vm = vms[i];
+        const int cpu = vm->cpu;
+        const int mem = vm->mem;
+        bool is_double = vm->IsDoubleNode() == 0;
+        if (is_double)
+        {
+            cpuA -= cpu / 2;
+            cpuB -= cpu / 2;
+            memA -= mem / 2;
+            memB -= mem / 2;
+        }
+        else
+        {
+            if (abs(cpuA - cpu - cpuB) + abs(memA - mem - memB) <= abs(cpuB - cpu - cpuA) + abs(memB - mem - memA) )
+            {
+                cpuA -= cpu;
+                memA -= mem;
+            }
+            else
+            {
+                cpuB -= cpu;
+                memB -= mem;
+            }
+        }
+    }
+    if(cpuA >= 0 && cpuB >=0 && memA >=0 && memB >=0)
+        return true;
+    else{
+        return false;
+    }
+}
