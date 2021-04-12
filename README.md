@@ -1,4 +1,4 @@
-# JobHunter.md
+# 2021华为 Huawei CodeCraft比赛现场复赛版
 ## Requirement
 * g++
 * cmake above 2.8 
