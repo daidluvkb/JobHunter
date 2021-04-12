@@ -1,4 +1,4 @@
-# JobHunter.md
+# 2021华为 Huawei CodeCraft 初赛版（已晋级）
 ## Requirement
 * g++
 * cmake above 2.8 
