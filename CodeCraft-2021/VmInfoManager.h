@@ -15,7 +15,7 @@ class VmInfoManager
 
 public:
     VmInfoManager(const unordered_map<string, VMInfo> &setvmInfos)
-        : vmInfos(setvmInfos), f(20),
+        : vmInfos(setvmInfos), f(100),
           pd(f, vector<int>(f, 0)),
           vm_d_cpu(0.0), vm_d_mem(0.0), vm_num(0)
     {

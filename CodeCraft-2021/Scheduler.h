@@ -22,11 +22,12 @@ private:
     queue<string> _purchase_info_eachday;
     queue<string> _migration_info_eachday;
     queue<string> _arrangement_info_eachday;
+     int days;
+     int totaldays;
 private:
     /* data */
 
     bool isMigrationOver5_1000() const;
-
     stringstream _today_add_arrangement;
     unordered_map<string, int> _today_purchased_hosts;//host type/name and cnt;
     vector<string> _today_purchased_hosts_vec;//host ;
@@ -57,6 +58,7 @@ private:
     unsigned seed;
     mt19937 rand_num; // 大随机数
 public:
+    void setTotalDays(const int total_days) { totaldays = total_days; }
     // double getVmProbability(const int cpu,  const int mem) const;   //lst
     void createVmInfoManager(const unordered_map<string, VMInfo> &setvmInfos);
     Scheduler(/* args */);
@@ -94,8 +96,11 @@ public:
     *migration oprations
     */
 private:
-//    void migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost);
-    bool chooseAHostToFree(shared_ptr<Host>&);
+    bool _spd_passed;
+    // bool cmpHostCandidate(const HostInfo &h1, const HostInfo &h2);
+    //    void migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost);
+    bool chooseAHostToFree(shared_ptr<Host>&host);
+    bool chooseAHostToFree_specialday(shared_ptr<Host>& host);
     bool migrateVM(shared_ptr<VirtualMachine>& vm, shared_ptr<Host>& targetHost);
     vector<shared_ptr<Host>> _migrate_list;
     int _migrateVMNumPerDay;
@@ -106,6 +111,7 @@ public:
     int get_migrateVMNumPerDay() const;
     static bool cmp(shared_ptr<Host>&, shared_ptr<Host> &);
     void oneDayMigration();
+    void specialDayMigration();
     void printMigrateInfo();
     //第一步求今天可以迁移的vm最大数量
     //2：找到几个空载率最高的host，vm总和小于第一步
@@ -115,6 +121,11 @@ public:
     //统计迁移：//czy
     shared_ptr<vector<vector<int>>> chooseHostsforMigrationVms_dp(vector<shared_ptr <VirtualMachine>>&vms, float currentPrice);
     shared_ptr<Host> chooseAHostToInsert(shared_ptr<VirtualMachine> &, unordered_map<shared_ptr<Host>, vector<shared_ptr<VirtualMachine>>>&);// 从busy,free的list中找一个可以的host
+
+    void specialMigration();
+    // bool cmpVMS(shared_ptr<VirtualMachine> &vm1, shared_ptr<VirtualMachine> &vm2);
+    // bool cmpFreeHosts(shared_ptr<Host> &host1, shared_ptr<Host> &host2);
+    vector<shared_ptr<VirtualMachine>> vmsList;
 };
 
 #endif

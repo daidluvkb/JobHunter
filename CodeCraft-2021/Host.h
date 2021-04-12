@@ -12,8 +12,6 @@ using namespace std;
 class Host{
     private:
         string m_type;
-        const int m_num_of_cpu;
-        const int m_size_of_mem;
         const int m_cost_base;
         int m_index;
         unordered_map <int, shared_ptr <VirtualMachine>> _vms;
@@ -22,6 +20,8 @@ class Host{
         int _left_mem_A;
         int _left_mem_B;
     public:
+        const int m_num_of_cpu;
+        const int m_size_of_mem;
         const int m_cost_perday;
         double getNoLoadRatio() const;
         bool isAbleToAddVM(shared_ptr<VirtualMachine> &vm);

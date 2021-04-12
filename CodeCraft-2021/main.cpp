@@ -204,8 +204,9 @@ void readFile_test_dp(const string &testName, Scheduler &scheduler)
         int k_p = s.find(' ');
         string s_days = s.substr(0, k_p);
         string s_K = s.substr(k_p + 1, s.length() - k_p);
-        int days = stoi(s_days);
-        int K = stoi(s_K)-1;
+        const int days = stoi(s_days);
+        scheduler.setTotalDays(days);
+        int K = stoi(s_K) - 1;
         for (int i = 0; i < days; i++)
         {
             /*

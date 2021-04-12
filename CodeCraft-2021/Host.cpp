@@ -558,8 +558,8 @@ bool Host::isFree(){
 
 void Host::print() const
 {
-    dcout << "left cpu :" << _left_cpu_A << '\t' << _left_cpu_B << endl;
-    dcout << "left mem :" << _left_mem_A << '\t' << _left_mem_B << endl;
+//     cout << "left cpu :" << _left_cpu_A << '\t' << _left_cpu_B << endl;
+//     cout << "left mem :" << _left_mem_A << '\t' << _left_mem_B << endl;
 }
 bool Host::checkMyself() const
 {
@@ -567,11 +567,11 @@ bool Host::checkMyself() const
     int cpuA = 0, cpuB = 0, memA = 0, memB = 0; 
     for (auto &i : _vms)
     {
-        if (i.second->getHost()->getIndex()!= m_index)
-        {
-            dcout << "vm host not match" << endl;
-            right = false;
-        }
+        // if (i.second->getHost()->getIndex()!= m_index)
+        // {
+        //     cout << "vm host not match" << endl;
+        //     right = false;
+        // }
         
         int cpu = i.second->getNumOfCpu(), mem = i.second->getSizeOfMem();
         if (i.second->IsDoubleNode() == 0)
@@ -601,10 +601,10 @@ bool Host::checkMyself() const
         memB + _left_mem_B != m_size_of_mem / 2 ||
         memA + _left_mem_A != m_size_of_mem / 2)
     {
-        dcout << "used cpu: " << cpuA << '\t' << cpuB << endl;
-        dcout << "used mem: " << memA << '\t' << memB << endl;
+        cout << "used cpu: " << cpuA << '\t' << cpuB << endl;
+        cout << "used mem: " << memA << '\t' << memB << endl;
         print();
-        dcout << "sum: " << m_num_of_cpu << '\t' << m_size_of_mem << endl;
+        cout << "sum: " << m_num_of_cpu << '\t' << m_size_of_mem << endl;
         right = false;
     }
     return right;
